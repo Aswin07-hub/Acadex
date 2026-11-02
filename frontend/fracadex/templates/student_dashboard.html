@@ -1,0 +1,588 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Student Dashboard</title>
+
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-logo">A</div>
+                <span>ACADEX</span>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{% url 'student_dashboard' %}" class="nav-link active">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
+
+                <a href="#documents" class="nav-link">
+                    <span>▤</span>
+                    My Documents
+                </a>
+
+                <a href="#events" class="nav-link">
+                    <span>▦</span>
+                    Campus Events
+                </a>
+
+                <a href="#notifications" class="nav-link">
+                    <span>♧</span>
+                    Notifications
+                </a>
+
+                <a href="#profile" class="nav-link">
+                    <span>○</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <a href="#help" class="nav-link">
+                    <span>?</span>
+                    Help & Support
+                </a>
+
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+
+                    <button type="submit" class="logout-button">
+                        <span>↪</span>
+                        Logout
+                    </button>
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="top-header">
+
+                <div class="header-left">
+
+                    <p class="institution-name">
+                        STUDENT PORTAL / ACADEX
+                    </p>
+
+                    <h2>Student Dashboard</h2>
+
+                </div>
+
+                <div class="header-right">
+
+                    <div class="search-box">
+                        <span>⌕</span>
+
+                        <input type="search" id="dashboardSearch" placeholder="Search documents...">
+                    </div>
+
+                    <a href="#notifications" class="notification-button" aria-label="Notifications">
+                        ♧
+                    </a>
+
+                    <div class="profile-info">
+
+                        <div class="profile-avatar">
+                            {{ request.user.first_name|first|upper }}
+                        </div>
+
+                        <div>
+                            <strong>
+                                {{ request.user.get_full_name|default:request.user.username }}
+                            </strong>
+
+                            <small>Student</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- WELCOME BANNER -->
+
+            <section class="welcome-banner">
+
+                <div class="welcome-content">
+
+                    <p class="welcome-tag">
+                        YOUR ACADEMIC JOURNEY
+                    </p>
+
+                    <h1>
+                        Welcome back,
+                        {{ request.user.first_name|default:request.user.username }}.
+                    </h1>
+
+                    <p>
+                        Stay organised, manage your academic documents
+                        and keep track of your campus activities.
+                    </p>
+
+                </div>
+
+                <div class="welcome-decoration">
+                    ACADEX
+                </div>
+
+            </section>
+
+
+            <!-- STATISTICS -->
+
+            <section class="statistics-grid">
+
+                <div class="stat-card">
+
+                    <p>Total Documents</p>
+
+                    <h2>{{ total_documents|default:0 }}</h2>
+
+                    <small>Documents submitted</small>
+
+                </div>
+
+                <div class="stat-card approved-card">
+
+                    <p>Approved Documents</p>
+
+                    <h2>{{ approved_documents|default:0 }}</h2>
+
+                    <small>Successfully verified</small>
+
+                </div>
+
+                <div class="stat-card pending-card">
+
+                    <p>Pending Documents</p>
+
+                    <h2>{{ pending_documents|default:0 }}</h2>
+
+                    <small>Waiting for verification</small>
+
+                </div>
+
+                <div class="stat-card">
+
+                    <p>Rejected Documents</p>
+
+                    <h2>{{ rejected_documents|default:0 }}</h2>
+
+                    <small>Require your attention</small>
+
+                </div>
+
+            </section>
+
+
+            <!-- DOCUMENT SECTION -->
+
+            <section class="content-section" id="documents">
+
+                <div class="section-heading">
+
+                    <div>
+                        <p class="section-label">ACADEMIC RECORDS</p>
+                        <h2>My Documents</h2>
+                        <p class="section-description">
+                            Upload and monitor your document verification status.
+                        </p>
+                    </div>
+
+                    <button type="button" class="primary-button" id="openUpload">
+                        + Upload Document
+                    </button>
+
+                </div>
+
+
+                <!-- DOCUMENT TABLE -->
+
+                <div class="table-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Document Name</th>
+                                <th>Submitted Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="documentTable">
+
+                            {% for document in documents %}
+
+                            <tr class="document-row">
+
+                                <td>
+                                    <div class="document-name">
+                                        <span class="document-icon">▤</span>
+
+                                        <strong>
+                                            {{ document.document_type }}
+                                        </strong>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {{ document.created_at|date:"d M Y" }}
+                                </td>
+
+                                <td>
+
+                                    {% if document.status == "APPROVED" %}
+
+                                    <span class="status approved">
+                                        Approved
+                                    </span>
+
+                                    {% elif document.status == "PENDING" %}
+
+                                    <span class="status pending">
+                                        Pending
+                                    </span>
+
+                                    {% elif document.status == "REJECTED" %}
+
+                                    <span class="status rejected">
+                                        Rejected
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="status revision">
+                                        {{ document.status }}
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td>
+                                    {% if document.file %}
+                                    <a href="{{ document.file.url }}" target="_blank" class="view-link">
+                                        View
+                                    </a>
+                                    {% else %}
+                                    <span class="view-link">Unavailable</span>
+                                    {% endif %}
+                                </td>
+
+                            </tr>
+
+                            {% empty %}
+
+                            <tr>
+                                <td colspan="4" class="empty-message">
+                                    No documents submitted yet.
+                                    Upload your first document to get started.
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+
+            <!-- BOTTOM GRID -->
+
+            <section class="bottom-grid">
+
+                <!-- CAMPUS EVENTS -->
+
+                <div class="content-card" id="events">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <p class="section-label">CAMPUS LIFE</p>
+                            <h2>Upcoming Events</h2>
+                        </div>
+
+                        <a href="#events" class="text-link">
+                            View all
+                        </a>
+
+                    </div>
+
+
+                    <div class="event-list">
+
+                        {% for event in events %}
+
+                        <div class="event-item">
+
+                            <div class="event-date">
+                                <strong>
+                                    {{ event.event_date|date:"d" }}
+                                </strong>
+
+                                <small>
+                                    {{ event.event_date|date:"M" }}
+                                </small>
+                            </div>
+
+                            <div class="event-details">
+
+                                <strong>{{ event.title }}</strong>
+
+                                <small>{{ event.description }}</small>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <p class="empty-message">
+                            No upcoming campus events.
+                        </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- NOTIFICATIONS -->
+
+                <div class="content-card" id="notifications">
+
+                    <div class="section-heading">
+
+                        <div>
+                            <p class="section-label">STAY UPDATED</p>
+                            <h2>Notifications</h2>
+                        </div>
+
+                        <span class="notification-count">
+                            {{ notifications|length }}
+                        </span>
+
+                    </div>
+
+
+                    <div class="notification-list">
+
+                        {% for notification in notifications %}
+
+                        <div class="notification-item">
+
+                            <span class="notification-dot"></span>
+
+                            <div>
+
+                                <strong>
+                                    {{ notification.title }}
+                                </strong>
+
+                                <p>
+                                    {{ notification.message }}
+                                </p>
+
+                                <small>
+                                    {{ notification.created_at|date:"d M Y, h:i A" }}
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                        {% empty %}
+
+                        <p class="empty-message">
+                            You have no new notifications.
+                        </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- PROFILE INFORMATION -->
+
+            <section class="content-card profile-card" id="profile">
+
+                <div class="section-heading">
+
+                    <div>
+                        <p class="section-label">PERSONAL INFORMATION</p>
+                        <h2>My Academic Profile</h2>
+                    </div>
+
+                </div>
+
+                <div class="profile-details">
+
+                    <div>
+                        <small>Student Name</small>
+                        <strong>
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Username / Register Number</small>
+                        <strong>{{ request.user.username }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Email Address</small>
+                        <strong>{{ request.user.email }}</strong>
+                    </div>
+
+                    <div>
+                        <small>Role</small>
+                        <strong>{{ request.user.get_role_display }}</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+
+                <span>ACADEX · Academic Excellence Platform</span>
+
+                <span>© 2026 All rights reserved.</span>
+
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- UPLOAD DOCUMENT MODAL -->
+
+    <dialog id="uploadModal" class="upload-modal">
+
+        <div class="modal-header">
+
+            <div>
+                <p class="section-label">DOCUMENT MANAGEMENT</p>
+                <h2>Upload Document</h2>
+            </div>
+
+            <button type="button" id="closeUpload" class="close-button">
+                ×
+            </button>
+
+        </div>
+
+
+        <form method="POST" action="{% url 'upload_document' %}" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+
+                <label for="documentType">
+                    Select Document Type
+                </label>
+
+                <select id="documentType" name="document_type" required>
+
+                    <option value="">Choose document</option>
+
+                    <option value="Aadhaar Card">Aadhaar Card</option>
+
+                    <option value="Community Certificate">
+                        Community Certificate
+                    </option>
+
+                    <option value="Transfer Certificate">
+                        Transfer Certificate
+                    </option>
+
+                    <option value="12th Marksheet">
+                        12th Marksheet
+                    </option>
+
+                    <option value="Other">Other</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="documentFile">
+                    Select File
+                </label>
+
+                <input type="file" id="documentFile" name="file" accept=".pdf,.jpg,.jpeg,.png" required>
+
+                <small>
+                    Accepted formats: PDF, JPG, PNG.
+                </small>
+
+            </div>
+
+
+            <div class="modal-actions">
+
+                <button type="button" id="cancelUpload" class="secondary-button">
+                    Cancel
+                </button>
+
+                <button type="submit" class="primary-button">
+                    Submit Document
+                </button>
+
+            </div>
+
+        </form>
+
+    </dialog>
+
+
+    <script src="{% static 'scripts/student_dashboard.js' %}"></script>
+
+</body>
+
+</html>
