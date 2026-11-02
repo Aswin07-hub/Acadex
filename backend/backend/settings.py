@@ -8,7 +8,11 @@ https://docs.djangoproject.com/en/6.1/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.1/ref/settings/
+<<<<<<< HEAD
 """ 
+=======
+"""
+>>>>>>> e46a6b3fc438b230a6503ba3a0fbc94345e8af9a
 
 from pathlib import Path
 
