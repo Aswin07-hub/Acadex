@@ -24,4 +24,5 @@ urlpatterns = [
     path('', views.login_page, name='login'),
      path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('upload-document/', views.upload_document, name='upload_document'),
 ]

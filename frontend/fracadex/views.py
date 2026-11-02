@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
 def login_page(request):
@@ -6,7 +6,7 @@ def login_page(request):
 # Create your views here.
 
 
-@login_required
+# @login_required
 def student_dashboard(request):
     context = {
         'total_documents': 0,
@@ -19,3 +19,12 @@ def student_dashboard(request):
     }
 
     return render(request, 'student_dashboard.html', context)
+
+
+#Temporary view for document upload
+
+def upload_document(request):
+    if request.method == 'POST':
+        return redirect('student_dashboard')
+
+    return redirect('student_dashboard')
