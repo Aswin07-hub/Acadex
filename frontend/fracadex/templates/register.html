@@ -1,0 +1,313 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Student Registration</title>
+
+    <link rel="stylesheet" href="{% static 'register.css' %}">
+</head>
+
+<body>
+
+<div class="register-container">
+
+    <!-- Left Welcome Section -->
+    <div class="welcome-section">
+
+        <div class="brand">
+            <div class="brand-logo">A</div>
+            <span>ACADEX</span>
+        </div>
+
+        <div class="welcome-content">
+
+            <p class="tagline">SMART CAMPUS MANAGEMENT</p>
+
+            <h1>
+                Begin your<br>
+                academic journey<br>
+                with <span>ACADEX.</span>
+            </h1>
+
+            <p class="description">
+                Create your student account and access your
+                academic information, documents and campus
+                activities through one platform.
+            </p>
+
+        </div>
+
+        <div class="welcome-footer">
+            ACADEX – Academic Excellence Platform
+        </div>
+
+    </div>
+
+
+    <!-- Right Registration Section -->
+    <div class="form-section">
+
+        <div class="register-card">
+
+            <div class="mobile-brand">ACADEX</div>
+
+            <p class="small-heading">CREATE YOUR ACCOUNT</p>
+
+            <h2>Student Registration</h2>
+
+            <p class="sub-heading">
+                Enter your details to create your account.
+            </p>
+
+
+            {% if message %}
+                <div class="message {% if success %}success{% endif %}">
+                    {{ message }}
+                </div>
+            {% endif %}
+
+
+            <form id="registerForm" method="POST" action="">
+
+                {% csrf_token %}
+
+                <!-- Personal Information -->
+                <div class="section-title">
+                    Personal Information
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="first_name">First Name</label>
+                        <input
+                            type="text"
+                            id="first_name"
+                            name="first_name"
+                            placeholder="Enter first name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="last_name">Last Name</label>
+                        <input
+                            type="text"
+                            id="last_name"
+                            name="last_name"
+                            placeholder="Enter last name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Create username"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email address"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Enter phone number"
+                            maxlength="15"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="date_of_birth"
+                            name="date_of_birth"
+                        >
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="address">Address</label>
+                        <textarea
+                            id="address"
+                            name="address"
+                            placeholder="Enter your address"
+                        ></textarea>
+                    </div>
+
+                </div>
+
+
+                <!-- Academic Information -->
+                <div class="section-title">
+                    Academic Information
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="register_number">Register Number</label>
+                        <input
+                            type="text"
+                            id="register_number"
+                            name="register_number"
+                            placeholder="Enter register number"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <select id="department" name="department" required>
+                            <option value="">Select department</option>
+                            <option value="Information Technology">Information Technology</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Electronics and Communication">Electronics and Communication</option>
+                            <option value="Electrical and Electronics">Electrical and Electronics</option>
+                            <option value="Mechanical Engineering">Mechanical Engineering</option>
+                            <option value="Civil Engineering">Civil Engineering</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="course">Course</label>
+                        <input
+                            type="text"
+                            id="course"
+                            name="course"
+                            placeholder="Example: B.Tech"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="year">Academic Year</label>
+                        <select id="year" name="year" required>
+                            <option value="">Select year</option>
+                            <option value="1">First Year</option>
+                            <option value="2">Second Year</option>
+                            <option value="3">Third Year</option>
+                            <option value="4">Fourth Year</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="section">Section</label>
+                        <input
+                            type="text"
+                            id="section"
+                            name="section"
+                            placeholder="Example: A"
+                            required
+                        >
+                    </div>
+
+                </div>
+
+
+                <!-- Account Information -->
+                <div class="section-title">
+                    Account Information
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Create password"
+                                minlength="8"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                data-target="password"
+                            >
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm Password</label>
+
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="confirm_password"
+                                name="confirm_password"
+                                placeholder="Confirm password"
+                                minlength="8"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="toggle-password"
+                                data-target="confirm_password"
+                            >
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <p id="formMessage" class="form-message"></p>
+
+                <button type="submit" class="register-button">
+                    Create Student Account
+                    <span>→</span>
+                </button>
+
+            </form>
+
+
+            <div class="login-link">
+                Already have an account?
+                <a href="{% url 'login_page' %}">Sign in</a>
+            </div>
+
+            <div class="form-footer">
+                © 2026 ACADEX. All rights reserved.
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="{% static 'scripts/register.js' %}"></script>
+
+</body>
+</html>
