@@ -1,0 +1,131 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEX | Login</title>
+
+    <link rel="stylesheet" href="{% static 'login.css' %}">
+</head>
+<body>
+
+    <div class="login-container">
+
+        <!-- Left Section -->
+        <div class="welcome-section">
+            <div class="brand">
+                <div class="brand-logo">A</div>
+                <span>ACADEX</span>
+            </div>
+
+            <div class="welcome-content">
+                <p class="tagline">SMART CAMPUS MANAGEMENT</p>
+
+                <h1>Everything you need.<br>
+                    One place to <span>grow.</span>
+                </h1>
+
+                <p class="description">
+                    Your academic journey, simplified.
+                    Access your campus information, documents
+                    and academic activities in one place.
+                </p>
+            </div>
+
+            <div class="welcome-footer">
+                <span>ACADEX – Academic Excellence Platform</span>
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="form-section">
+
+            <div class="login-card">
+
+                <div class="mobile-brand">ACADEX</div>
+
+                <p class="small-heading">WELCOME BACK</p>
+
+                <h2>Sign in to your account</h2>
+
+                <p class="sub-heading">
+                    Enter your credentials to continue.
+                </p>
+
+                <form id="loginForm">
+
+                    <div class="form-group">
+                        <label for="role">Login as</label>
+
+                        <select id="role" name="role" required>
+                            <option value="" disabled selected>
+                                Select your role
+                            </option>
+                            <option value="student">Student</option>
+                            <option value="hod">HOD</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="username">
+                            Username / Register Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="username"
+                            name="username"
+                            placeholder="Enter your username"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <div class="password-label">
+                            <label for="password">Password</label>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+
+                        <div class="password-wrapper">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Enter your password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="toggle-password"
+                                aria-label="Show password"
+                            >
+                                Show
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        Sign In <span>→</span>
+                    </button>
+
+                    <p id="message" class="message"></p>
+
+                </form>
+
+                <div class="form-footer">
+                    <p>© 2026 ACADEX. All rights reserved.</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="{% static 'scripts/login.js' %}"></script>
+
+</body>
+</html>
