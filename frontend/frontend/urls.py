@@ -18,23 +18,13 @@ Including another URLconf
 
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from django.contrib.auth import views as auth_views
-from fracadex import views
+from fracadex import urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-
-    # Login and Registration
-    path('', views.login_page, name='login_page'),
-    path('register/', views.register_page, name='register_page'),
-
-    # Student Dashboard
-    path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
-
-    # Logout
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
-
-    # Document Upload
-    path('upload-document/', views.upload_document, name='upload_document'),
+    path('/',include('fracadex.urls.login')),
+    path('/profile',include('fracadex.urls.profile')),
+    
 ]
