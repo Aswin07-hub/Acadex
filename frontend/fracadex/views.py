@@ -1,7 +1,8 @@
 
 import requests
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 
 
 # Backend URL
@@ -26,7 +27,6 @@ def login_page(request):
         session = requests.Session()
 
         try:
-            # Get CSRF token from backend
             csrf_response = session.get(
                 BASE_URL + "api/csrf/",
                 timeout=10
@@ -38,7 +38,6 @@ def login_page(request):
                 message = "Unable to connect to backend CSRF service."
 
             else:
-                # Send login details to backend
                 response = session.post(
                     BASE_URL + "api/login/",
                     json={
@@ -55,11 +54,7 @@ def login_page(request):
 
                 result = response.json()
 
-                message = result.get(
-                    "message",
-                    "Login failed"
-                )
-
+                message = result.get("message", "Login failed")
                 success = result.get("success", False)
 
         except requests.RequestException:
@@ -85,45 +80,26 @@ def register_page(request):
 
     if request.method == "POST":
 
-        # Collect registration form data
         data = {
             "first_name": request.POST.get("first_name", "").strip(),
             "last_name": request.POST.get("last_name", "").strip(),
             "username": request.POST.get("username", "").strip(),
             "email": request.POST.get("email", "").strip(),
             "phone": request.POST.get("phone", "").strip(),
-
-            "date_of_birth": request.POST.get(
-                "date_of_birth", ""
-            ).strip(),
-
+            "date_of_birth": request.POST.get("date_of_birth", "").strip(),
             "address": request.POST.get("address", "").strip(),
-
-            "register_number": request.POST.get(
-                "register_number", ""
-            ).strip(),
-
-            "department": request.POST.get(
-                "department", ""
-            ).strip(),
-
+            "register_number": request.POST.get("register_number", "").strip(),
+            "department": request.POST.get("department", "").strip(),
             "course": request.POST.get("course", "").strip(),
-
             "year": request.POST.get("year", "").strip(),
-
             "section": request.POST.get("section", "").strip(),
-
             "password": request.POST.get("password", ""),
-
-            "confirm_password": request.POST.get(
-                "confirm_password", ""
-            )
+            "confirm_password": request.POST.get("confirm_password", "")
         }
 
         session = requests.Session()
 
         try:
-            # Step 1: Get CSRF token from backend
             csrf_response = session.get(
                 BASE_URL + "api/csrf/",
                 timeout=10
@@ -135,7 +111,6 @@ def register_page(request):
                 message = "Unable to get CSRF token from backend."
 
             else:
-                # Step 2: Send registration details to backend
                 response = session.post(
                     BASE_URL + "api/register/",
                     json=data,
@@ -148,11 +123,7 @@ def register_page(request):
 
                 result = response.json()
 
-                message = result.get(
-                    "message",
-                    "Registration failed"
-                )
-
+                message = result.get("message", "Registration failed")
                 success = result.get("success", False)
 
         except requests.RequestException:
@@ -165,3 +136,35 @@ def register_page(request):
         "message": message,
         "success": success
     })
+
+
+# ==========================================
+# STUDENT DASHBOARD
+# ==========================================
+
+# @login_required
+def student_dashboard(request):
+
+    context = {
+        "total_documents": 0,
+        "approved_documents": 0,
+        "pending_documents": 0,
+        "rejected_documents": 0,
+        "documents": [],
+        "events": [],
+        "notifications": [],
+    }
+
+    return render(request, "student_dashboard.html", context)
+
+
+# ==========================================
+# DOCUMENT UPLOAD
+# ==========================================
+
+def upload_document(request):
+
+    if request.method == "POST":
+        return redirect("student_dashboard")
+
+    return redirect("student_dashboard")
