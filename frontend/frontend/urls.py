@@ -25,5 +25,6 @@ from fracadex import urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('/',include('fracadex.urls.login')),
+    path('/profile',include('fracadex.urls.profile')),
     
 ]
