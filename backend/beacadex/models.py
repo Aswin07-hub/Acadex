@@ -247,10 +247,24 @@ class Announcement(models.Model):
 
 # ==================================================
 # 7. NOTIFICATION MODEL
-# Notifications for students and HOD
+# Notifications for Students and HOD
 # ==================================================
 
 class Notification(models.Model):
+
+    CATEGORY_CHOICES = [
+        ('ACADEMIC', 'Academic'),
+        ('DOCUMENT', 'Documents'),
+        ('ANNOUNCEMENT', 'Announcements'),
+        ('EVENT', 'Events'),
+        ('SYSTEM', 'System Updates'),
+    ]
+
+    PRIORITY_CHOICES = [
+        ('NORMAL', 'Normal'),
+        ('IMPORTANT', 'Important'),
+        ('URGENT', 'Urgent'),
+    ]
 
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -259,14 +273,30 @@ class Notification(models.Model):
     )
 
     title = models.CharField(max_length=200)
+
     message = models.TextField()
+
+    category = models.CharField(
+        max_length=20,
+        choices=CATEGORY_CHOICES,
+        default='ANNOUNCEMENT'
+    )
+
+    priority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='NORMAL'
+    )
 
     is_read = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
-        return self.title
+        return f"{self.recipient.username} - {self.title}"
 
 
 # ==================================================

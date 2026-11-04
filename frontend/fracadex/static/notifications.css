@@ -1,0 +1,60 @@
+/* Notifications content only */
+
+.notifications-content {
+    padding: 25px;
+    width: 100%;
+}
+
+.notifications-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.notifications-content p {
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: var(--card-bg, #fff);
+}
+
+.notification-item.unread {
+    border-left: 4px solid #03B4FF;
+}
+
+.notification-item h3 {
+    font-size: 16px;
+    margin-bottom: 7px;
+}
+
+.notification-item p {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #888;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.notification-actions button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}

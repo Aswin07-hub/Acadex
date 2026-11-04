@@ -26,5 +26,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('fracadex.urls.login')),
     path('profile/',include('fracadex.urls.profile')),
+    path("notifications/", include("fracadex.urls.notifications")),
     
 ]

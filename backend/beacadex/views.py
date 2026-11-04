@@ -2,13 +2,17 @@
 import json
 
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
-from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+from django.views.decorators.csrf import (
+    ensure_csrf_cookie,
+    csrf_protect,
+    csrf_exempt
+)
 from django.db import transaction
 from django.utils.dateparse import parse_date
-
-from .models import StudentProfile
+from .models import StudentProfile, Notification
 
 User = get_user_model()
 
@@ -339,4 +343,146 @@ def logout_view(request):
     return JsonResponse({
         "success": True,
         "message": "Logout successful"
+    })
+
+
+
+# ==========================================
+# GET: Display Student Notifications
+# ==========================================
+
+@csrf_exempt
+@require_GET
+def notification_list(request):
+
+    username = request.GET.get("username")
+
+    if not username:
+        return JsonResponse({
+            "success": False,
+            "message": "Username is required"
+        }, status=400)
+
+    notifications = Notification.objects.filter(
+        recipient__username=username,
+        recipient__role="STUDENT"
+    )
+
+    data = []
+
+    for notification in notifications:
+        data.append({
+            "id": notification.id,
+            "title": notification.title,
+            "message": notification.message,
+            "category": notification.category,
+            "category_display": notification.get_category_display(),
+            "priority": notification.priority,
+            "is_read": notification.is_read,
+            "created_at": notification.created_at.strftime(
+                "%d %b %Y, %I:%M %p"
+            )
+        })
+
+    return JsonResponse({
+        "success": True,
+        "notifications": data,
+        "total_count": notifications.count(),
+        "unread_count": notifications.filter(
+            is_read=False
+        ).count(),
+        "important_count": notifications.filter(
+            priority__in=["IMPORTANT", "URGENT"]
+        ).count()
+    })
+
+
+# ==========================================
+# POST: Mark One Notification as Read
+# ==========================================
+
+@csrf_exempt
+@require_POST
+def mark_notification_read(request, notification_id):
+
+    username = request.POST.get("username")
+
+    if not username:
+        return JsonResponse({
+            "success": False,
+            "message": "Username is required"
+        }, status=400)
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        recipient__username=username,
+        recipient__role="STUDENT"
+    )
+
+    notification.is_read = True
+    notification.save(update_fields=["is_read"])
+
+    return JsonResponse({
+        "success": True,
+        "message": "Notification marked as read"
+    })
+
+
+# ==========================================
+# POST: Mark All Notifications as Read
+# ==========================================
+
+@csrf_exempt
+@require_POST
+def mark_all_notifications_read(request):
+
+    username = request.POST.get("username")
+
+    if not username:
+        return JsonResponse({
+            "success": False,
+            "message": "Username is required"
+        }, status=400)
+
+    Notification.objects.filter(
+        recipient__username=username,
+        recipient__role="STUDENT",
+        is_read=False
+    ).update(is_read=True)
+
+    return JsonResponse({
+        "success": True,
+        "message": "All notifications marked as read"
+    })
+
+
+# ==========================================
+# POST: Delete Notification
+# ==========================================
+
+@csrf_exempt
+@require_POST
+def delete_notification(request, notification_id):
+
+    username = request.POST.get("username")
+
+    if not username:
+        return JsonResponse({
+            "success": False,
+            "message": "Username is required"
+        }, status=400)
+
+    notification = get_object_or_404(
+        Notification,
+        id=notification_id,
+        recipient__username=username,
+        recipient__role="STUDENT"
+    )
+
+    notification.delete()
+
+    return JsonResponse({
+        "success": True,
+        "message": "Notification deleted successfully"
     })

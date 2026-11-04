@@ -13,9 +13,6 @@ BASE_URL = "http://127.0.0.1:8001/"
 
 def login_page(request):
 
-    if request.session.get("student_username"):
-        return redirect("student_dashboard")
-
     message = ""
     success = False
 
@@ -28,55 +25,34 @@ def login_page(request):
         session = requests.Session()
 
         try:
-            csrf_response = session.get(
-                BASE_URL + "api/csrf/",
-                timeout=10
-            )
-
+            csrf_response = session.get(BASE_URL + "api/csrf/", timeout=10)
             csrf_token = session.cookies.get("csrftoken")
 
             if not csrf_response.ok or not csrf_token:
                 message = "Unable to connect to backend CSRF service."
-
             else:
                 response = session.post(
                     BASE_URL + "api/login/",
-                    json={
-                        "username": username,
-                        "password": password,
-                        "role": role
-                    },
-                    headers={
-                        "X-CSRFToken": csrf_token,
-                        "Referer": BASE_URL
-                    },
+                    json={"username": username, "password": password, "role": role},
+                    headers={"X-CSRFToken": csrf_token, "Referer": BASE_URL},
                     timeout=10
                 )
 
                 result = response.json()
-
                 message = result.get("message", "Login failed")
                 success = result.get("success", False)
 
                 if success:
-
                     request.session["student_username"] = username
                     request.session["user_role"] = role
-
                     return redirect("student_dashboard")
 
         except requests.RequestException:
             message = "Backend server is not running."
-
         except ValueError:
             message = "Invalid response received from backend."
 
-    return render(request, "login.html", {
-        "message": message,
-        "success": success
-    })
-
-
+    return render(request, "login.html", {"message": message, "success": success})
 # ==========================================
 # REGISTER PAGE
 # ==========================================
@@ -155,7 +131,7 @@ def student_dashboard(request):
     username = request.session.get("student_username")
 
     if not username:
-        return redirect("login")
+        return redirect("login_page")
 
     context = {
         "username": username,
@@ -195,4 +171,4 @@ def logout_page(request):
 
     request.session.flush()
 
-    return redirect("login")
+    return redirect("login_page")

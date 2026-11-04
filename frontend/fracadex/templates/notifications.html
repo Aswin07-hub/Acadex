@@ -1,0 +1,755 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Notifications</title>
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+
+    <!-- Notifications CSS -->
+    <link rel="stylesheet" href="{% static 'notifications.css' %}">
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <h2>ACADEX</h2>
+                <p>Student Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    Dashboard
+                </a>
+
+                <a href="#documents" class="nav-link">
+                    My Documents
+                </a>
+
+                <a href="#events" class="nav-link">
+                    Campus Events
+                </a>
+
+                <a href="{% url 'notifications' %}" class="nav-link active">
+                    Notifications
+                </a>
+
+                <a href="#profile" class="nav-link">
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="top-header">
+
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Stay updated with your academic activities</p>
+                </div>
+
+                <div class="header-right">
+
+                    <a href="{% url 'notifications' %}" class="notification-icon">
+                        Notifications
+                    </a>
+
+                    <div class="profile-info">
+                        <span>{{ username }}</span>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- ================= NOTIFICATIONS ================= -->
+
+            <section class="notifications-content">
+
+                <div class="notifications-heading">
+
+                    <div>
+                        <h2>All Notifications</h2>
+                        <p>View and manage your latest updates.</p>
+                    </div>
+
+                    <button id="markAllRead" type="button">
+                        Mark all as read
+                    </button>
+
+                </div>
+
+
+                <!-- NOTIFICATION STATISTICS -->
+
+                <div class="notification-stats">
+
+                    <div class="notification-stat">
+                        <h3>{{ total_count }}</h3>
+                        <p>Total Notifications</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ unread_count }}</h3>
+                        <p>Unread</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ important_count }}</h3>
+                        <p>Important</p>
+                    </div>
+
+                </div>
+
+
+                <!-- FILTER BUTTONS -->
+
+                <div class="notification-toolbar">
+
+                    <button class="notification-filter active" data-filter="all" type="button">
+                        All
+                    </button>
+
+                    <button class="notification-filter" data-filter="unread" type="button">
+                        Unread
+                    </button>
+
+                    <button class="notification-filter" data-filter="read" type="button">
+                        Read
+                    </button>
+
+                </div>
+
+
+                <!-- ERROR MESSAGE -->
+
+                {% if api_error %}
+                <p class="notification-error">{{ api_error }}</p>
+                {% endif %}
+
+
+                <!-- NOTIFICATION LIST -->
+
+                <div class="notification-list">
+
+                    {% for notification in notifications %}
+
+                    <div class="notification-item
+                    {% if not notification.is_read %}unread{% endif %}">
+
+                        <div class="notification-details">
+
+                            <div class="notification-title-row">
+
+                                <h3>{{ notification.title }}</h3>
+
+                                {% if not notification.is_read %}
+                                <span class="unread-label">New</span>
+                                {% endif %}
+
+                            </div>
+
+                            <p>{{ notification.message }}</p>
+
+                            <div class="notification-meta">
+
+                                <span>{{ notification.category }}</span>
+
+                                <span>{{ notification.priority }}</span>
+
+                                <span class="notification-time">
+                                    {{ notification.created_at }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTION BUTTONS -->
+
+                        <div class="notification-actions">
+
+                            {% if not notification.is_read %}
+
+                            <button class="mark-read-btn" data-id="{{ notification.id }}" type="button">
+                                Mark as read
+                            </button>
+
+                            {% endif %}
+
+                            <button class="delete-notification-btn" data-id="{{ notification.id }}" type="button">
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty-notifications">
+                        <h3>No Notifications</h3>
+                        <p>You are all caught up. New updates will appear here.</p>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+                <p>© 2026 ACADEX. All rights reserved.</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="{% static 'js/notifications.js' %}"></script>
+
+</body>
+
+</html>
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Notifications</title>
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+
+    <!-- Notifications CSS -->
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <h2>ACADEX</h2>
+                <p>Student Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    Dashboard
+                </a>
+
+                <a href="#documents" class="nav-link">
+                    My Documents
+                </a>
+
+                <a href="#events" class="nav-link">
+                    Campus Events
+                </a>
+
+                <a href="{% url 'notifications' %}" class="nav-link active">
+                    Notifications
+                </a>
+
+                <a href="#profile" class="nav-link">
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="top-header">
+
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Stay updated with your academic activities</p>
+                </div>
+
+                <div class="header-right">
+
+                    <a href="{% url 'notifications' %}" class="notification-icon">
+                        Notifications
+                    </a>
+
+                    <div class="profile-info">
+                        <span>{{ username }}</span>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- ================= NOTIFICATIONS ================= -->
+
+            <section class="notifications-content">
+
+                <div class="notifications-heading">
+
+                    <div>
+                        <h2>All Notifications</h2>
+                        <p>View and manage your latest updates.</p>
+                    </div>
+
+                    <button id="markAllRead" type="button">
+                        Mark all as read
+                    </button>
+
+                </div>
+
+
+                <!-- NOTIFICATION STATISTICS -->
+
+                <div class="notification-stats">
+
+                    <div class="notification-stat">
+                        <h3>{{ total_count }}</h3>
+                        <p>Total Notifications</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ unread_count }}</h3>
+                        <p>Unread</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ important_count }}</h3>
+                        <p>Important</p>
+                    </div>
+
+                </div>
+
+
+                <!-- FILTER BUTTONS -->
+
+                <div class="notification-toolbar">
+
+                    <button class="notification-filter active" data-filter="all" type="button">
+                        All
+                    </button>
+
+                    <button class="notification-filter" data-filter="unread" type="button">
+                        Unread
+                    </button>
+
+                    <button class="notification-filter" data-filter="read" type="button">
+                        Read
+                    </button>
+
+                </div>
+
+
+                <!-- ERROR MESSAGE -->
+
+                {% if api_error %}
+                <p class="notification-error">{{ api_error }}</p>
+                {% endif %}
+
+
+                <!-- NOTIFICATION LIST -->
+
+                <div class="notification-list">
+
+                    {% for notification in notifications %}
+
+                    <div class="notification-item
+                    {% if not notification.is_read %}unread{% endif %}">
+
+                        <div class="notification-details">
+
+                            <div class="notification-title-row">
+
+                                <h3>{{ notification.title }}</h3>
+
+                                {% if not notification.is_read %}
+                                <span class="unread-label">New</span>
+                                {% endif %}
+
+                            </div>
+
+                            <p>{{ notification.message }}</p>
+
+                            <div class="notification-meta">
+
+                                <span>{{ notification.category }}</span>
+
+                                <span>{{ notification.priority }}</span>
+
+                                <span class="notification-time">
+                                    {{ notification.created_at }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTION BUTTONS -->
+
+                        <div class="notification-actions">
+
+                            {% if not notification.is_read %}
+
+                            <button class="mark-read-btn" data-id="{{ notification.id }}" type="button">
+                                Mark as read
+                            </button>
+
+                            {% endif %}
+
+                            <button class="delete-notification-btn" data-id="{{ notification.id }}" type="button">
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty-notifications">
+                        <h3>No Notifications</h3>
+                        <p>You are all caught up. New updates will appear here.</p>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+                <p>© 2026 ACADEX. All rights reserved.</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="{% static 'js/notifications.js' %}"></script>
+
+</body>
+
+</html>
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Notifications</title>
+
+    <!-- Dashboard CSS -->
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+
+    <!-- Notifications CSS -->
+    <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <h2>ACADEX</h2>
+                <p>Student Portal</p>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    Dashboard
+                </a>
+
+                <a href="#documents" class="nav-link">
+                    My Documents
+                </a>
+
+                <a href="#events" class="nav-link">
+                    Campus Events
+                </a>
+
+                <a href="{% url 'notifications' %}" class="nav-link active">
+                    Notifications
+                </a>
+
+                <a href="#profile" class="nav-link">
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="sidebar-footer">
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn">
+                        Logout
+                    </button>
+                </form>
+            </div>
+
+        </aside>
+
+
+        <!-- ================= MAIN CONTENT ================= -->
+
+        <main class="main-content">
+
+            <!-- HEADER -->
+
+            <header class="top-header">
+
+                <div>
+                    <h2>Notifications</h2>
+                    <p>Stay updated with your academic activities</p>
+                </div>
+
+                <div class="header-right">
+
+                    <a href="{% url 'notifications' %}" class="notification-icon">
+                        Notifications
+                    </a>
+
+                    <div class="profile-info">
+                        <span>{{ username }}</span>
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <!-- ================= NOTIFICATIONS ================= -->
+
+            <section class="notifications-content">
+
+                <div class="notifications-heading">
+
+                    <div>
+                        <h2>All Notifications</h2>
+                        <p>View and manage your latest updates.</p>
+                    </div>
+
+                    <button id="markAllRead" type="button">
+                        Mark all as read
+                    </button>
+
+                </div>
+
+
+                <!-- NOTIFICATION STATISTICS -->
+
+                <div class="notification-stats">
+
+                    <div class="notification-stat">
+                        <h3>{{ total_count }}</h3>
+                        <p>Total Notifications</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ unread_count }}</h3>
+                        <p>Unread</p>
+                    </div>
+
+                    <div class="notification-stat">
+                        <h3>{{ important_count }}</h3>
+                        <p>Important</p>
+                    </div>
+
+                </div>
+
+
+                <!-- FILTER BUTTONS -->
+
+                <div class="notification-toolbar">
+
+                    <button class="notification-filter active" data-filter="all" type="button">
+                        All
+                    </button>
+
+                    <button class="notification-filter" data-filter="unread" type="button">
+                        Unread
+                    </button>
+
+                    <button class="notification-filter" data-filter="read" type="button">
+                        Read
+                    </button>
+
+                </div>
+
+
+                <!-- ERROR MESSAGE -->
+
+                {% if api_error %}
+                <p class="notification-error">{{ api_error }}</p>
+                {% endif %}
+
+
+                <!-- NOTIFICATION LIST -->
+
+                <div class="notification-list">
+
+                    {% for notification in notifications %}
+
+                    <div class="notification-item
+                    {% if not notification.is_read %}unread{% endif %}">
+
+                        <div class="notification-details">
+
+                            <div class="notification-title-row">
+
+                                <h3>{{ notification.title }}</h3>
+
+                                {% if not notification.is_read %}
+                                <span class="unread-label">New</span>
+                                {% endif %}
+
+                            </div>
+
+                            <p>{{ notification.message }}</p>
+
+                            <div class="notification-meta">
+
+                                <span>{{ notification.category }}</span>
+
+                                <span>{{ notification.priority }}</span>
+
+                                <span class="notification-time">
+                                    {{ notification.created_at }}
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACTION BUTTONS -->
+
+                        <div class="notification-actions">
+
+                            {% if not notification.is_read %}
+
+                            <button class="mark-read-btn" data-id="{{ notification.id }}" type="button">
+                                Mark as read
+                            </button>
+
+                            {% endif %}
+
+                            <button class="delete-notification-btn" data-id="{{ notification.id }}" type="button">
+                                Delete
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    {% empty %}
+
+                    <div class="empty-notifications">
+                        <h3>No Notifications</h3>
+                        <p>You are all caught up. New updates will appear here.</p>
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+
+            <footer class="dashboard-footer">
+                <p>© 2026 ACADEX. All rights reserved.</p>
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script src="{% static 'scripts/notifications.js' %}"></script>
+
+</body>
+
+</html>
