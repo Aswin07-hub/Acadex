@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const phone = document.getElementById("phone");
     const message = document.getElementById("formMessage");
     const submitButton = form?.querySelector(".register-button");
-
+ 
     if (!form) return;
 
     // Show and hide passwords
