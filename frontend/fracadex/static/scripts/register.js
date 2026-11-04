@@ -1,73 +1,144 @@
+document.addEventListener("DOMContentLoaded", function () {
 
-// ======================================
-// 1. Show / Hide Password
-// ======================================
+    const form = document.getElementById("registerForm");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirm_password");
+    const phone = document.getElementById("phone");
+    const message = document.getElementById("formMessage");
+    const submitButton = form?.querySelector(".register-button");
 
-const toggleButtons = document.querySelectorAll(".toggle-password");
+    if (!form) return;
 
-toggleButtons.forEach(function(button) {
+    // Show and hide passwords
+    document.querySelectorAll(".toggle-password").forEach(function (button) {
 
-    button.addEventListener("click", function() {
+        button.addEventListener("click", function () {
 
-        const targetId = button.dataset.target;
-        const passwordInput = document.getElementById(targetId);
+            const targetId = button.dataset.target;
+            const input = document.getElementById(targetId);
 
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            button.textContent = "Hide";
+            if (!input) return;
+
+            if (input.type === "password") {
+                input.type = "text";
+                button.textContent = "Hide";
+            } else {
+                input.type = "password";
+                button.textContent = "Show";
+            }
+
+        });
+
+    });
+
+    // Display validation messages
+    function showMessage(text, type = "error") {
+        if (!message) return;
+
+        message.textContent = text;
+        message.className = "form-message " + type;
+    }
+
+    function clearMessage() {
+        if (!message) return;
+
+        message.textContent = "";
+        message.className = "form-message";
+    }
+
+    // Confirm password while typing
+    confirmPassword?.addEventListener("input", function () {
+
+        clearMessage();
+
+        if (confirmPassword.value && password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity("Passwords do not match.");
         } else {
-            passwordInput.type = "password";
-            button.textContent = "Show";
+            confirmPassword.setCustomValidity("");
         }
 
     });
 
-});
+    password?.addEventListener("input", function () {
 
+        clearMessage();
 
-// ======================================
-// 2. Registration Form Validation
-// ======================================
+        if (confirmPassword.value) {
+            confirmPassword.setCustomValidity(
+                password.value === confirmPassword.value
+                    ? ""
+                    : "Passwords do not match."
+            );
+        }
 
-const registerForm = document.getElementById("registerForm");
-const formMessage = document.getElementById("formMessage");
+    });
 
-registerForm.addEventListener("submit", function(event) {
+    // Phone number validation
+    phone?.addEventListener("input", function () {
 
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirm_password").value;
-    const phone = document.getElementById("phone").value.trim();
+        phone.value = phone.value.replace(/[^\d+\-\s()]/g, "");
+        clearMessage();
 
-    formMessage.textContent = "";
+    });
 
-    if (password.length < 8) {
+    // Date of birth: prevent future dates
+    const dob = document.getElementById("date_of_birth");
 
-        event.preventDefault();
+    if (dob) {
+        const today = new Date();
+        const localToday = [
+            today.getFullYear(),
+            String(today.getMonth() + 1).padStart(2, "0"),
+            String(today.getDate()).padStart(2, "0")
+        ].join("-");
 
-        formMessage.textContent =
-            "Password must contain at least 8 characters.";
-
-        return;
+        dob.max = localToday;
     }
 
-    if (password !== confirmPassword) {
+    // Form submission validation
+    form.addEventListener("submit", function (event) {
 
-        event.preventDefault();
+        clearMessage();
 
-        formMessage.textContent =
-            "Password and confirm password do not match.";
+        // Check all HTML required fields
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            form.reportValidity();
+            return;
+        }
 
-        return;
-    }
+        // Password length
+        if (password.value.length < 8) {
+            event.preventDefault();
+            showMessage("Password must contain at least 8 characters.");
+            password.focus();
+            return;
+        }
 
-    if (!/^[0-9]{10,15}$/.test(phone)) {
+        // Password match
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault();
+            showMessage("Password and confirm password do not match.");
+            confirmPassword.focus();
+            return;
+        }
 
-        event.preventDefault();
+        // Phone validation
+        const phoneDigits = phone.value.replace(/\D/g, "");
 
-        formMessage.textContent =
-            "Please enter a valid phone number.";
+        if (phoneDigits.length < 10 || phoneDigits.length > 15) {
+            event.preventDefault();
+            showMessage("Enter a valid phone number (10 to 15 digits).");
+            phone.focus();
+            return;
+        }
 
-        return;
-    }
+        // Allow the normal POST request to Django
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.innerHTML = "Creating Account...";
+        }
+
+    });
 
 });

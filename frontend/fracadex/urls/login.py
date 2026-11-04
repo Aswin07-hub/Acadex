@@ -13,7 +13,7 @@ urlpatterns = [
     path('student/dashboard/',student_dashboard, name='student_dashboard'),
 
     # Logout
-    # path('logout/',LogoutView.as_view(), name='logout'),
+    path('logout/', logout_page, name='logout'),
 
     # Document Upload
     path('upload-document/', upload_document, name='upload_document'),

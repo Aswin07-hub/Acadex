@@ -1,11 +1,9 @@
-
 import requests
 
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 
-# Backend URL
 BASE_URL = "http://127.0.0.1:8001/"
 
 
@@ -14,6 +12,9 @@ BASE_URL = "http://127.0.0.1:8001/"
 # ==========================================
 
 def login_page(request):
+
+    if request.session.get("student_username"):
+        return redirect("student_dashboard")
 
     message = ""
     success = False
@@ -57,8 +58,15 @@ def login_page(request):
                 message = result.get("message", "Login failed")
                 success = result.get("success", False)
 
+                if success:
+
+                    request.session["student_username"] = username
+                    request.session["user_role"] = role
+
+                    return redirect("student_dashboard")
+
         except requests.RequestException:
-            message = "Backend server is not running. Please start it."
+            message = "Backend server is not running."
 
         except ValueError:
             message = "Invalid response received from backend."
@@ -127,7 +135,7 @@ def register_page(request):
                 success = result.get("success", False)
 
         except requests.RequestException:
-            message = "Backend server is not running. Please start it."
+            message = "Backend server is not running."
 
         except ValueError:
             message = "Invalid response received from backend."
@@ -142,10 +150,15 @@ def register_page(request):
 # STUDENT DASHBOARD
 # ==========================================
 
-# @login_required
 def student_dashboard(request):
 
+    username = request.session.get("student_username")
+
+    if not username:
+        return redirect("login")
+
     context = {
+        "username": username,
         "total_documents": 0,
         "approved_documents": 0,
         "pending_documents": 0,
@@ -164,7 +177,22 @@ def student_dashboard(request):
 
 def upload_document(request):
 
+    if not request.session.get("student_username"):
+        return redirect("login")
+
     if request.method == "POST":
+        # Actual backend document upload will be connected here.
         return redirect("student_dashboard")
 
     return redirect("student_dashboard")
+
+
+# ==========================================
+# LOGOUT
+# ==========================================
+
+def logout_page(request):
+
+    request.session.flush()
+
+    return redirect("login")
