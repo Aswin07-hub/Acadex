@@ -1,7 +1,7 @@
 
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 
 from beacadex import views
 
@@ -19,4 +19,9 @@ urlpatterns = [
     path("api/login/", views.login_view, name="login"),
 
     path("api/logout/", views.logout_view, name="logout"),
+    path(
+    "api/student-profile/",
+    include("beacadex.urls.profile")
+),
+
 ]
