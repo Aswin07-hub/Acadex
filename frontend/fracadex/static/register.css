@@ -1,0 +1,361 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fb;
+    min-height: 100vh;
+    padding: 30px;
+    color: #263750;
+}
+
+.register-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 15px 50px rgba(20, 35, 70, 0.10);
+}
+
+/* Left Section */
+
+.welcome-section {
+    width: 34%;
+    background: linear-gradient(145deg, #142c53, #244d80);
+    color: white;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.brand-logo {
+    width: 42px;
+    height: 42px;
+    background: white;
+    color: #19375f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.welcome-content {
+    margin: 55px 0;
+}
+
+.tagline {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #b7d6ff;
+    margin-bottom: 22px;
+}
+
+.welcome-content h1 {
+    font-size: 34px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.welcome-content h1 span {
+    color: #85baff;
+}
+
+.description {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #d2e0f3;
+}
+
+.welcome-footer {
+    font-size: 12px;
+    color: #b7c9e0;
+}
+
+
+/* Right Section */
+
+.form-section {
+    width: 66%;
+    padding: 45px;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 720px;
+    margin: auto;
+}
+
+.mobile-brand {
+    display: none;
+}
+
+.small-heading {
+    color: #4779b9;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+}
+
+.register-card h2 {
+    color: #192c49;
+    font-size: 28px;
+    margin-bottom: 9px;
+}
+
+.sub-heading {
+    color: #8993a4;
+    font-size: 13px;
+    margin-bottom: 28px;
+}
+
+
+/* Form Sections */
+
+.section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #244d80;
+    border-bottom: 1px solid #e7ebf1;
+    padding-bottom: 12px;
+    margin: 30px 0 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-group {
+    min-width: 0;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #34445e;
+    margin-bottom: 9px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 13px;
+    border: 1px solid #dce2eb;
+    border-radius: 7px;
+    outline: none;
+    background: white;
+    color: #263750;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.form-group textarea {
+    min-height: 85px;
+    resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #3979c7;
+    box-shadow: 0 0 0 3px rgba(57, 121, 199, 0.10);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #aab2bf;
+}
+
+
+/* Password */
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 60px;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: none;
+    color: #3979c7;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+
+/* Button */
+
+.register-button {
+    width: 100%;
+    height: 50px;
+    margin-top: 25px;
+    background: #244d80;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.register-button span {
+    margin-left: 8px;
+    font-size: 18px;
+}
+
+.register-button:hover {
+    background: #17365f;
+    transform: translateY(-1px);
+}
+
+
+/* Messages */
+
+.message,
+.form-message {
+    font-size: 13px;
+    margin-top: 15px;
+    text-align: center;
+    color: #c03939;
+}
+
+.message {
+    padding: 12px;
+    border-radius: 7px;
+    background: #fff0f0;
+    margin-bottom: 18px;
+}
+
+.message.success {
+    background: #eaf8ef;
+    color: #247442;
+}
+
+.form-message:empty {
+    display: none;
+}
+
+
+/* Login Link */
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 13px;
+    color: #8993a4;
+}
+
+.login-link a {
+    color: #3979c7;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.form-footer {
+    border-top: 1px solid #edf0f4;
+    margin-top: 30px;
+    padding-top: 18px;
+    text-align: center;
+    color: #9ba4b2;
+    font-size: 11px;
+}
+
+
+/* Responsive Design */
+
+@media (max-width: 900px) {
+    body {
+        padding: 15px;
+    }
+
+    .welcome-section {
+        width: 30%;
+        padding: 25px;
+    }
+
+    .form-section {
+        width: 70%;
+        padding: 30px;
+    }
+
+    .welcome-content h1 {
+        font-size: 27px;
+    }
+}
+
+@media (max-width: 650px) {
+    .register-container {
+        max-width: 480px;
+    }
+
+    .welcome-section {
+        display: none;
+    }
+
+    .form-section {
+        width: 100%;
+        padding: 30px 22px;
+    }
+
+    .mobile-brand {
+        display: block;
+        color: #244d80;
+        font-size: 23px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        margin-bottom: 25px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.full-width {
+        grid-column: auto;
+    }
+
+    .register-card h2 {
+        font-size: 24px;
+    }
+}

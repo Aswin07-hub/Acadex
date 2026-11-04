@@ -1,12 +1,19 @@
 
+<<<<<<< HEAD
+// ======================================
+// 1. Show and Hide Password
+// ======================================
+=======
 // ========================================
 // 1. GET HTML ELEMENTS
 // ========================================
+>>>>>>> bd4a0030db424e0b74989f15dec3197df1795904
 
 const loginForm = document.getElementById("loginForm");
 const roleInput = document.getElementById("role");
 const usernameInput = document.getElementById("username");
 const passwordInput = document.getElementById("password");
+
 const togglePassword = document.getElementById("togglePassword");
 const message = document.getElementById("message");
 
@@ -44,6 +51,38 @@ togglePassword.addEventListener("click", function () {
 });
 
 
+<<<<<<< HEAD
+// ======================================
+// 2. Login Form Validation
+// ======================================
+
+const loginForm = document.getElementById("loginForm");
+
+const message = document.getElementById("message");
+
+loginForm.addEventListener("submit", function (event) {
+
+    const role = document.getElementById("role").value;
+
+    const username = document.getElementById("username").value.trim();
+
+    const password = passwordInput.value;
+
+    if (
+        role === "" ||
+        username === "" ||
+        password === ""
+    ) {
+
+        event.preventDefault();
+
+        message.textContent = "Please fill in all fields.";
+
+        message.style.color = "red";
+
+    }
+
+=======
 // ========================================
 // 3. DISPLAY MESSAGE
 // ========================================
@@ -176,4 +215,15 @@ forgotLink.addEventListener("click", function (event) {
 
     });
 
+>>>>>>> bd4a0030db424e0b74989f15dec3197df1795904
 });
+
+
+// ======================================
+// 3. Login Submission
+// ======================================
+
+// The browser submits the form using POST.
+// Frontend Django views.py receives the request.
+// Python requests performs GET and POST
+// communication with the backend API.
