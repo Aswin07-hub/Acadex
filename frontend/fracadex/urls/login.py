@@ -1,7 +1,11 @@
 
 from django.contrib import admin
 from django.urls import path
-
+from fracadex.views.help_support import (
+    help_support_page,
+    send_support_message,
+    support_history
+)
 from fracadex.views.login import *
 
 urlpatterns = [
@@ -17,4 +21,9 @@ urlpatterns = [
 
     # Document Upload
     path('upload-document/', upload_document, name='upload_document'),
+
+
+    path("student/help-support/", help_support_page, name="help_support"),
+    path("student/help-support/send/", send_support_message, name="send_support_message"),
+    path("student/help-support/history/", support_history, name="support_history"),
 ]

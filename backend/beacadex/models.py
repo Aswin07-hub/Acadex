@@ -320,3 +320,70 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return self.action
+
+
+
+
+# ==========================================
+# 9. SUPPORT CONVERSATION MODEL
+# ==========================================
+
+class SupportConversation(models.Model):
+
+    student = models.ForeignKey(
+        StudentProfile,
+        on_delete=models.CASCADE,
+        related_name="support_conversations"
+    )
+
+    subject = models.CharField(
+        max_length=200,
+        default="AI Help & Support"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.student.register_number} - {self.subject}"
+
+
+# ==========================================
+# 10. SUPPORT MESSAGE MODEL
+# ==========================================
+
+class SupportMessage(models.Model):
+
+    SENDER_CHOICES = [
+        ("STUDENT", "Student"),
+        ("AI", "AI Assistant"),
+    ]
+
+    STATUS_CHOICES = [
+        ("ANSWERED", "Answered"),
+        ("UNRESOLVED", "Unresolved"),
+    ]
+
+    conversation = models.ForeignKey(
+        SupportConversation,
+        on_delete=models.CASCADE,
+        related_name="messages"
+    )
+
+    sender = models.CharField(
+        max_length=10,
+        choices=SENDER_CHOICES
+    )
+
+    message = models.TextField()
+
+    status = models.CharField(
+        max_length=15,
+        choices=STATUS_CHOICES,
+        default="ANSWERED"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender} - {self.created_at}"

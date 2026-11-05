@@ -20,4 +20,8 @@ urlpatterns = [
 
     path("api/logout/", views.logout_view, name="logout"),
     path("api/student-profile/", include("beacadex.urls.profile")),
+
+    path("api/support/chat/", views.support_chat, name="support_chat"),
+
+    path("api/support/history/", views.support_history, name="support_history"),
 ]
