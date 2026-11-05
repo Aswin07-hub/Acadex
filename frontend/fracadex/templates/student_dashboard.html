@@ -9,6 +9,7 @@
     <title>ACADEX | Student Dashboard</title>
 
     <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+   
 </head>
 
 <body>
@@ -46,10 +47,8 @@
                     Notifications
                 </a>
 
-                <a href="{% url 'student_profile' %}" class="nav-link">
-                    <span>○</span>
-                    My Profile
-                </a>
+                <a href="{% url 'student_profile' %}" class="nav-link" id="profileNav">
+                <span>○</span>My Profile</a>
 
             </nav>
 
@@ -457,7 +456,7 @@
                     <div>
                         <small>Student Name</small>
                         <strong>
-                            {{ request.user.get_full_name|default:request.user.username }}
+                            {{ profile.first_name }} {{ profile.last_name }}    
                         </strong>
                     </div>
 
@@ -468,12 +467,12 @@
 
                     <div>
                         <small>Email Address</small>
-                        <strong>{{ request.user.email }}</strong>
+                        <strong>{{ profile.email }}</strong>
                     </div>
 
                     <div>
                         <small>Role</small>
-                        <strong>{{ request.user.get_role_display }}</strong>
+                        <strong>{{ profile.role|default:"STUDENT" }}</strong>
                     </div>
 
                 </div>
@@ -582,6 +581,7 @@
 
 
     <script src="{% static 'scripts/student_dashboard.js' %}"></script>
+   
 
 </body>
 
