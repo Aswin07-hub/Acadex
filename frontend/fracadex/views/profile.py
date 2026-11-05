@@ -8,10 +8,13 @@ BASE_URL = "http://127.0.0.1:8001/"
 def student_profile(request):
 
     username = request.session.get("student_username")
+    backend_sessionid = request.session.get("backend_sessionid")
+    csrf_token = request.session.get("backend_csrf_token")
 
     print("LOGGED-IN USERNAME:", username)
+    print("BACKEND SESSION RECEIVED:", bool(backend_sessionid))
 
-    if not username:
+    if not username or not backend_sessionid:
         return redirect("login_page")
 
     profile = {}
@@ -20,46 +23,47 @@ def student_profile(request):
 
     backend_session = requests.Session()
 
-    # Backend authentication cookie
+    # Forward backend login session
     backend_session.cookies.set(
         "sessionid",
-        request.session.get("backend_sessionid") or "",
-        domain="127.0.0.1",
-        path="/"
+        backend_sessionid
     )
 
-    # Backend CSRF cookie
-    csrf_token = request.session.get("backend_csrftoken") or ""
-
-    backend_session.cookies.set(
-        "csrftoken",
-        csrf_token,
-        domain="127.0.0.1",
-        path="/"
-    )
+    # Forward backend CSRF cookie
+    if csrf_token:
+        backend_session.cookies.set(
+            "csrftoken",
+            csrf_token
+        )
 
     try:
 
-        # FETCH PROFILE
+        # STEP 1: FETCH STUDENT PROFILE
         response = backend_session.get(
             BASE_URL + "api/student-profile/",
             timeout=10
         )
 
         print("FETCH STATUS:", response.status_code)
+        print("FETCH RESPONSE:", response.text)
 
         result = response.json()
+
+        if response.status_code == 401:
+            message = "Backend session expired. Please login again."
+            return redirect("login_page")
 
         if response.ok and result.get("success"):
             profile = result.get("profile", {})
             print("MATCHED PROFILE:", profile)
+
         else:
             message = result.get(
                 "message",
                 "Unable to fetch student profile."
             )
 
-        # UPDATE PROFILE
+        # STEP 2: UPDATE STUDENT PROFILE
         if request.method == "POST":
 
             data = {
@@ -71,10 +75,12 @@ def student_profile(request):
                 "address": request.POST.get("address", "").strip()
             }
 
-            headers = {
-                "X-CSRFToken": csrf_token,
-                "Referer": BASE_URL + "api/student-profile/"
-            }
+            headers = {}
+
+            if csrf_token:
+                headers["X-CSRFToken"] = csrf_token
+
+            headers["Referer"] = BASE_URL + "api/student-profile/"
 
             update_response = backend_session.post(
                 BASE_URL + "api/student-profile/",
