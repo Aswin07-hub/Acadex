@@ -11,6 +11,16 @@
     <title>ACADEX | Login</title>
 
     <link rel="stylesheet" href="{% static 'login.css' %}">
+
+    <style>
+        .message.success {
+            color: green;
+        }
+
+        .message.error {
+            color: red;
+        }
+    </style>
 </head>
 
 <body>
@@ -158,8 +168,7 @@
 
                         <p
                             id="message"
-                            class="message"
-                            style="color: {% if success %}green{% else %}red{% endif %};"
+                            class="message {% if success %}success{% else %}error{% endif %}"
                         >
                             {{ message }}
                         </p>

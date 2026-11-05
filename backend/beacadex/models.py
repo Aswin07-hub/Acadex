@@ -83,6 +83,7 @@ class HODProfile(models.Model):
     )
 
     department = models.CharField(max_length=100)
+
     designation = models.CharField(
         max_length=100,
         default='Head of Department'
@@ -95,19 +96,53 @@ class HODProfile(models.Model):
 
 
 # ==================================================
-# 4. DOCUMENT MODEL
-# Student uploads documents
+# 4. SUBMISSION REQUEST MODEL
+# HOD creates academic submission requests
+# ==================================================
+
+class SubmissionRequest(models.Model):
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='submission_requests'
+    )
+
+    department = models.CharField(max_length=100)
+
+    document_type = models.CharField(max_length=30)
+
+    title = models.CharField(max_length=150)
+
+    description = models.TextField()
+
+    deadline = models.DateField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.department}"
+
+
+# ==================================================
+# 5. DOCUMENT MODEL
+# Students upload academic documents
 # ==================================================
 
 class Document(models.Model):
 
     DOCUMENT_TYPES = [
-        ('ID', 'College ID'),
-        ('MARKSHEET', 'Marksheet'),
-        ('CERTIFICATE', 'Certificate'),
-        ('TRANSFER', 'Transfer Certificate'),
-        ('COMMUNITY', 'Community Certificate'),
-        ('OTHER', 'Other'),
+        ('ASSIGNMENT', 'Assignment'),
+        ('GROUP_PROJECT', 'Group Project Report'),
+        ('MINI_PROJECT', 'Mini Project Report'),
+        ('FINAL_PROJECT', 'Final Year Project'),
+        ('SEMINAR', 'Seminar Report'),
+        ('INTERNSHIP', 'Internship Report'),
+        ('INDUSTRIAL_VISIT', 'Industrial Visit Report'),
+        ('RESEARCH', 'Research Paper'),
+        ('OTHER', 'Other Academic Work'),
     ]
 
     STATUS_CHOICES = [
@@ -123,8 +158,16 @@ class Document(models.Model):
         related_name='documents'
     )
 
+    submission_request = models.ForeignKey(
+        SubmissionRequest,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='submissions'
+    )
+
     document_type = models.CharField(
-        max_length=20,
+        max_length=30,
         choices=DOCUMENT_TYPES
     )
 
@@ -143,6 +186,7 @@ class Document(models.Model):
     version = models.PositiveIntegerField(default=1)
 
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -150,7 +194,7 @@ class Document(models.Model):
 
 
 # ==================================================
-# 5. DOCUMENT REVIEW MODEL
+# 6. DOCUMENT REVIEW MODEL
 # HOD reviews student documents
 # ==================================================
 
@@ -183,7 +227,7 @@ class DocumentReview(models.Model):
 
 
 # ==================================================
-# 6. ANNOUNCEMENT MODEL
+# 7. ANNOUNCEMENT MODEL
 # HOD publishes campus announcements
 # ==================================================
 
@@ -209,6 +253,7 @@ class Announcement(models.Model):
     )
 
     title = models.CharField(max_length=200)
+
     message = models.TextField()
 
     audience = models.CharField(
@@ -239,14 +284,18 @@ class Announcement(models.Model):
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(null=True, blank=True)
+
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
         return self.title
 
 
 # ==================================================
-# 7. NOTIFICATION MODEL
+# 8. NOTIFICATION MODEL
 # Notifications for Students and HOD
 # ==================================================
 
@@ -300,7 +349,7 @@ class Notification(models.Model):
 
 
 # ==================================================
-# 8. AUDIT LOG MODEL
+# 9. AUDIT LOG MODEL
 # Tracks important activities
 # ==================================================
 
@@ -314,6 +363,7 @@ class AuditLog(models.Model):
     )
 
     action = models.CharField(max_length=200)
+
     description = models.TextField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

@@ -145,3 +145,10 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
 ]
+# ==========================================
+# MEDIA FILE CONFIGURATION
+# ==========================================
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

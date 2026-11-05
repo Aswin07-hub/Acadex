@@ -1,0 +1,347 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Documents | ACADEX</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #202536;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+        }
+
+        .muted {
+            color: #737b8c;
+        }
+
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .summary strong {
+            font-size: 28px;
+            display: block;
+            margin-top: 8px;
+        }
+
+        .document-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #e7eaf0;
+        }
+
+        .document-card h3 {
+            margin-top: 0;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .detail {
+            color: #687184;
+            font-size: 14px;
+        }
+
+        .detail strong {
+            display: block;
+            color: #202536;
+            margin-top: 5px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #fff2d8;
+            color: #966000;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-approved {
+            background: #e1f7e9;
+            color: #16743b;
+        }
+
+        .status-correction {
+            background: #fff2d8;
+            color: #966000;
+        }
+
+        .status-rejected {
+            background: #ffe5e5;
+            color: #bd2525;
+        }
+
+        .view-btn {
+            display: inline-block;
+            background: #202536;
+            color: white;
+            text-decoration: none;
+            padding: 11px 18px;
+            border-radius: 7px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .review-section {
+            margin-top: 22px;
+            padding-top: 20px;
+            border-top: 1px solid #e7eaf0;
+        }
+
+        .review-section h4 {
+            margin-top: 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 85px;
+            padding: 12px;
+            border: 1px solid #dce1e9;
+            border-radius: 7px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            margin: 10px 0;
+        }
+
+        .review-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .review-actions button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 7px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .approve-btn {
+            background: #168343;
+        }
+
+        .correction-btn {
+            background: #d28a16;
+        }
+
+        .reject-btn {
+            background: #c93636;
+        }
+
+        .previous-review {
+            background: #f4f6fa;
+            padding: 13px;
+            border-radius: 7px;
+            margin-top: 15px;
+        }
+
+        .empty, .message {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px;
+            }
+
+            .review-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <div class="header">
+        <div>
+            <h1>Student Documents</h1>
+            <p class="muted">
+                Review academic submissions from your department.
+            </p>
+        </div>
+
+        <a href="{% url 'hod_requests_page' %}" class="view-btn">
+            Submission Requests
+        </a>
+    </div>
+
+    <div class="summary">
+        <span class="muted">Total submitted documents</span>
+        <strong>{{ total_documents }}</strong>
+        <p class="muted">{{ department }}</p>
+    </div>
+
+    {% if message %}
+        <div class="message">{{ message }}</div>
+    {% endif %}
+
+    {% if documents %}
+        {% for document in documents %}
+
+            <div class="document-card">
+
+                <h3>{{ document.title }}</h3>
+
+                <span class="status
+                    {% if document.status == 'APPROVED' %}status-approved
+                    {% elif document.status == 'CORRECTION' %}status-correction
+                    {% elif document.status == 'REJECTED' %}status-rejected
+                    {% endif %}">
+                    {{ document.status_display|default:document.status }}
+                </span>
+
+                <div class="details">
+
+                    <div class="detail">
+                        Student
+                        <strong>{{ document.student_name }}</strong>
+                    </div>
+
+                    <div class="detail">
+                        Register Number
+                        <strong>{{ document.register_number }}</strong>
+                    </div>
+
+                    <div class="detail">
+                        Document Type
+                        <strong>{{ document.document_type }}</strong>
+                    </div>
+
+                    <div class="detail">
+                        Uploaded On
+                        <strong>{{ document.uploaded_at }}</strong>
+                    </div>
+
+                    <div class="detail">
+                        Version
+                        <strong>{{ document.version }}</strong>
+                    </div>
+
+                </div>
+
+                <a href="{{ document.file_url }}"
+                   target="_blank"
+                   rel="noopener"
+                   class="view-btn">
+                    View Document
+                </a>
+
+                {% if document.latest_review_comments %}
+                    <div class="previous-review">
+                        <strong>Previous Review Comments</strong>
+                        <p>{{ document.latest_review_comments }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="review-section">
+
+                    <h4>Verify Student Submission</h4>
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <input type="hidden"
+                               name="document_id"
+                               value="{{ document.id }}">
+
+                        <label for="comments-{{ document.id }}">
+                            Comments / Feedback
+                        </label>
+
+                        <textarea
+                            id="comments-{{ document.id }}"
+                            name="comments"
+                            placeholder="Enter feedback for the student. Required for correction or rejection."
+                        ></textarea>
+
+                        <div class="review-actions">
+
+                            <button type="submit"
+                                    name="status"
+                                    value="APPROVED"
+                                    class="approve-btn">
+                                Approve
+                            </button>
+
+                            <button type="submit"
+                                    name="status"
+                                    value="CORRECTION"
+                                    class="correction-btn">
+                                Request Correction
+                            </button>
+
+                            <button type="submit"
+                                    name="status"
+                                    value="REJECTED"
+                                    class="reject-btn">
+                                Reject
+                            </button>
+
+                        </div>
+                    </form>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    {% else %}
+        <div class="empty">
+            <h3>No documents submitted yet</h3>
+            <p class="muted">
+                Student submissions from your department will appear here.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Edit Document</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #202b3c;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 50px auto;
+            padding: 25px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            gap: 15px;
+        }
+
+        .brand {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #244b82;
+        }
+
+        .card {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px #172b4d0d;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: 27px;
+        }
+
+        .description {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin: 20px 0 9px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d9e0eb;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            background: #f8f9fc;
+        }
+
+        .current-file {
+            background: #f4f6fa;
+            padding: 13px;
+            border-radius: 7px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 7px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary {
+            background: #243b60;
+            color: white;
+        }
+
+        .secondary {
+            background: #e9eef6;
+            color: #243b60;
+        }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .message {
+            padding: 13px;
+            background: #fff1e5;
+            color: #96511b;
+            border-radius: 7px;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            color: #718096;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 12px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px auto;
+            }
+
+            .card {
+                padding: 22px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <header class="topbar">
+        <div class="brand">ACADEX</div>
+
+        <a href="{% url 'my_documents_page' %}">
+            ← Back to My Documents
+        </a>
+    </header>
+
+    <div class="card">
+
+        <h1>Edit Document</h1>
+
+        <p class="description">
+            Welcome, {{ username }}. Update your document title
+            or replace the uploaded file.
+        </p>
+
+        {% if page_error %}
+            <div class="message">{{ page_error }}</div>
+        {% endif %}
+
+        {% if document %}
+
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <label>Document Title</label>
+
+                <input
+                    type="text"
+                    name="title"
+                    value="{{ document.title }}"
+                    placeholder="Enter document title"
+                >
+
+                <label>Current Document</label>
+
+                <div class="current-file">
+                    {% if document.file_url %}
+                        <a href="{{ document.file_url }}"
+                           target="_blank">
+                            View Current File
+                        </a>
+                    {% else %}
+                        Current file unavailable.
+                    {% endif %}
+                </div>
+
+                <label>Replace Document (Optional)</label>
+
+                <input
+                    type="file"
+                    name="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                >
+
+                <p class="note">
+                    Allowed formats: PDF, JPG, JPEG and PNG.
+                    Replacing the file increases its version
+                    and sends it for HOD review again.
+                    Approved documents cannot be edited.
+                </p>
+
+                <div class="actions">
+
+                    <button type="submit" class="button primary">
+                        Save Changes
+                    </button>
+
+                    <a href="{% url 'my_documents_page' %}"
+                       class="button secondary">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>

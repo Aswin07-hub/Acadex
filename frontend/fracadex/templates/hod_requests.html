@@ -1,0 +1,162 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Academic Submissions</title>
+
+    <link rel="stylesheet" href="{% static 'hod_requests.css' %}">
+    <script src="{% static 'hod_requests.js' %}" defer></script>
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <header class="header">
+        <div class="brand">
+            <h1>ACADEX</h1>
+            <p>Academic Interaction Portal</p>
+        </div>
+
+        <div class="header-right">
+            <span>HOD Dashboard</span>
+            <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <section class="welcome">
+            <div>
+                <h2>Academic Submissions</h2>
+                <p>Manage academic requests and student submissions.</p>
+            </div>
+        </section>
+
+        {% if message %}
+            <div class="message">{{ message }}</div>
+        {% endif %}
+
+        <section class="form-section">
+
+            <div class="section-heading">
+                <h3>Create Submission Request</h3>
+                <p>Provide students with academic work and submission instructions.</p>
+            </div>
+
+            <form method="POST" id="requestForm">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="title">Request Title</label>
+                    <input
+                        type="text"
+                        id="title"
+                        name="title"
+                        placeholder="Example: Data Structures Assignment - Unit 3"
+                        maxlength="200"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="document_type">Document Category</label>
+
+                    <select id="document_type" name="document_type" required>
+                        <option value="">Select category</option>
+
+                        {% for value, label in document_types %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Instructions for Students</label>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="5"
+                        placeholder="Explain what students need to prepare and submit..."
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="deadline">Submission Deadline</label>
+                    <input
+                        type="date"
+                        id="deadline"
+                        name="deadline"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="submitBtn">
+                    Create Request
+                </button>
+
+            </form>
+
+        </section>
+
+        <section class="requests-section">
+
+            <div class="section-heading">
+                <h3>Created Submission Requests</h3>
+                <p>Review the academic work requested from students.</p>
+            </div>
+
+            <div class="request-list">
+
+                {% for item in requests_list %}
+
+                    <article class="request-card">
+
+                        <div class="request-top">
+                            <div>
+                                <h4>{{ item.title }}</h4>
+                                <span class="category">
+                                    {{ item.document_type }}
+                                </span>
+                            </div>
+
+                            <span class="status {% if item.is_active %}active{% else %}closed{% endif %}">
+                                {% if item.is_active %}Active{% else %}Closed{% endif %}
+                            </span>
+                        </div>
+
+                        <p class="description">{{ item.description }}</p>
+
+                        <div class="request-info">
+                            <span>Deadline: {{ item.deadline }}</span>
+                            <span>Submissions: {{ item.submission_count }}</span>
+                        </div>
+
+                    </article>
+
+                {% empty %}
+
+                    <div class="empty-state">
+                        <h4>No submission requests yet</h4>
+                        <p>Create your first academic submission request above.</p>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

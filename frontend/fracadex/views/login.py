@@ -1,10 +1,17 @@
+
 import requests
 
 from django.shortcuts import render, redirect
-from django.contrib.auth import logout
 
 
 BASE_URL = "http://127.0.0.1:8001/"
+
+
+def get_backend_cookies(request):
+    return {
+        "sessionid": request.session.get("backend_sessionid"),
+        "csrftoken": request.session.get("backend_csrf_token"),
+    }
 
 
 # ==========================================
@@ -25,34 +32,71 @@ def login_page(request):
         session = requests.Session()
 
         try:
-            csrf_response = session.get(BASE_URL + "api/csrf/", timeout=10)
+            csrf_response = session.get(
+                BASE_URL + "api/csrf/",
+                timeout=10
+            )
+
             csrf_token = session.cookies.get("csrftoken")
 
             if not csrf_response.ok or not csrf_token:
                 message = "Unable to connect to backend CSRF service."
+
             else:
                 response = session.post(
                     BASE_URL + "api/login/",
-                    json={"username": username, "password": password, "role": role},
-                    headers={"X-CSRFToken": csrf_token, "Referer": BASE_URL},
+                    json={
+                        "username": username,
+                        "password": password,
+                        "role": role
+                    },
+                    headers={
+                        "X-CSRFToken": csrf_token,
+                        "Referer": BASE_URL
+                    },
                     timeout=10
                 )
 
                 result = response.json()
+
                 message = result.get("message", "Login failed")
                 success = result.get("success", False)
 
                 if success:
+
                     request.session["student_username"] = username
                     request.session["user_role"] = role
-                    return redirect("student_dashboard")
+
+                    request.session["backend_sessionid"] = (
+                        session.cookies.get("sessionid")
+                    )
+
+                    request.session["backend_csrf_token"] = (
+                        session.cookies.get("csrftoken")
+                    )
+
+                    if role == "HOD":
+                        return redirect("hod_requests_page")
+
+                    if role == "STUDENT":
+                        return redirect("student_dashboard")
 
         except requests.RequestException:
             message = "Backend server is not running."
+
         except ValueError:
             message = "Invalid response received from backend."
 
-    return render(request, "login.html", {"message": message, "success": success})
+    return render(
+        request,
+        "login.html",
+        {
+            "message": message,
+            "success": success
+        }
+    )
+
+
 # ==========================================
 # REGISTER PAGE
 # ==========================================
@@ -107,7 +151,11 @@ def register_page(request):
 
                 result = response.json()
 
-                message = result.get("message", "Registration failed")
+                message = result.get(
+                    "message",
+                    "Registration failed"
+                )
+
                 success = result.get("success", False)
 
         except requests.RequestException:
@@ -116,10 +164,14 @@ def register_page(request):
         except ValueError:
             message = "Invalid response received from backend."
 
-    return render(request, "register.html", {
-        "message": message,
-        "success": success
-    })
+    return render(
+        request,
+        "register.html",
+        {
+            "message": message,
+            "success": success
+        }
+    )
 
 
 # ==========================================
@@ -133,6 +185,9 @@ def student_dashboard(request):
     if not username:
         return redirect("login_page")
 
+    if request.session.get("user_role") != "STUDENT":
+        return redirect("login_page")
+
     context = {
         "username": username,
         "total_documents": 0,
@@ -142,25 +197,60 @@ def student_dashboard(request):
         "documents": [],
         "events": [],
         "notifications": [],
+        "hod_requests": [],
+        "dashboard_error": "",
+        "upload_success_message": request.session.pop(
+            "upload_success_message",
+            ""
+        ),
     }
 
-    return render(request, "student_dashboard.html", context)
+    cookies = get_backend_cookies(request)
 
+    if not cookies["sessionid"]:
+        context["dashboard_error"] = (
+            "Your backend session has expired. Please login again."
+        )
 
-# ==========================================
-# DOCUMENT UPLOAD
-# ==========================================
+        return render(
+            request,
+            "student_dashboard.html",
+            context
+        )
 
-def upload_document(request):
+    try:
+        response = requests.get(
+            BASE_URL + "api/submission-requests/",
+            cookies=cookies,
+            timeout=20
+        )
 
-    if not request.session.get("student_username"):
-        return redirect("login")
+        result = response.json()
 
-    if request.method == "POST":
-        # Actual backend document upload will be connected here.
-        return redirect("student_dashboard")
+        if response.ok and result.get("success"):
+            context["hod_requests"] = result.get("requests", [])
 
-    return redirect("student_dashboard")
+        else:
+            context["dashboard_error"] = result.get(
+                "message",
+                "Unable to load HOD submission requests."
+            )
+
+    except requests.RequestException:
+        context["dashboard_error"] = (
+            "Unable to connect to backend server."
+        )
+
+    except ValueError:
+        context["dashboard_error"] = (
+            "Invalid response received from backend."
+        )
+
+    return render(
+        request,
+        "student_dashboard.html",
+        context
+    )
 
 
 # ==========================================

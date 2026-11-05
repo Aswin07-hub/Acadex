@@ -1,0 +1,235 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEX | My Documents</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #202b3c;
+        }
+        .page { max-width: 1200px; margin: auto; padding: 35px 24px; }
+        .topbar {
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 30px; gap: 15px;
+        }
+        .brand { font-size: 23px; font-weight: 800; letter-spacing: 2px; }
+        .back-link { color: #52647b; text-decoration: none; }
+        .heading { margin-bottom: 25px; }
+        .heading h1 { font-size: 30px; margin-bottom: 9px; }
+        .heading p { color: #718096; line-height: 1.6; }
+        .toolbar {
+            display: flex; justify-content: space-between;
+            align-items: center; gap: 15px; margin-bottom: 22px;
+        }
+        .count { color: #718096; }
+        .button {
+            display: inline-block; padding: 11px 17px;
+            border-radius: 7px; text-decoration: none;
+            font-weight: 600; border: 0; cursor: pointer;
+        }
+        .primary { background: #243b60; color: white; }
+        .secondary { background: #e9eef6; color: #243b60; }
+        .table-wrap {
+            background: white; border-radius: 12px;
+            overflow-x: auto; box-shadow: 0 4px 18px #172b4d0d;
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 800px; }
+        th, td {
+            padding: 17px 16px; text-align: left;
+            border-bottom: 1px solid #edf0f5; font-size: 14px;
+        }
+        th { background: #f8f9fc; color: #64748b; font-size: 12px; }
+        .doc-title { font-weight: 700; margin-bottom: 5px; }
+        .muted { color: #8793a5; font-size: 12px; }
+        .status {
+            display: inline-block; padding: 6px 10px;
+            border-radius: 20px; font-size: 12px; font-weight: 700;
+        }
+        .approved { background: #e4f7ec; color: #16804a; }
+        .pending { background: #fff3d8; color: #a56a00; }
+        .rejected { background: #fde8e8; color: #c03939; }
+        .correction { background: #eee8ff; color: #7045b5; }
+        .actions { display: flex; gap: 8px; }
+        .action-link { color: #244b82; text-decoration: none; font-weight: 600; }
+        .empty {
+            padding: 45px 20px; text-align: center;
+            color: #718096; line-height: 1.8;
+        }
+        .section { margin-top: 40px; }
+        .section h2 { margin-bottom: 8px; }
+        .section-description { color: #718096; margin-bottom: 18px; }
+        .request-card {
+            background: white; padding: 22px; border-radius: 10px;
+            margin-bottom: 14px; box-shadow: 0 3px 14px #172b4d0b;
+        }
+        .request-card h3 { margin: 9px 0; }
+        .request-card p { color: #718096; line-height: 1.6; margin: 7px 0; }
+        .message {
+            padding: 13px; background: #fff1e5;
+            color: #96511b; border-radius: 7px; margin-bottom: 20px;
+        }
+        @media (max-width: 650px) {
+            .toolbar, .topbar { align-items: flex-start; flex-direction: column; }
+            .heading h1 { font-size: 25px; }
+        }
+    </style>
+</head>
+
+<body>
+<main class="page">
+
+    <header class="topbar">
+        <div class="brand">ACADEX</div>
+        <a href="{% url 'student_dashboard' %}" class="back-link">
+            ← Back to Dashboard
+        </a>
+    </header>
+
+    <section class="heading">
+        <h1>My Documents</h1>
+        <p>
+            Welcome, {{ username }}. Manage your academic documents,
+            review their status and update your submissions.
+        </p>
+    </section>
+
+    {% if page_error %}
+        <div class="message">{{ page_error }}</div>
+    {% endif %}
+
+    <div class="toolbar">
+        <p class="count">
+            Your uploaded academic documents
+        </p>
+
+        <a href="{% url 'upload_document' %}" class="button primary">
+            + Upload New Document
+        </a>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Document</th>
+                    <th>Document Type</th>
+                    <th>Upload Date</th>
+                    <th>Version</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for document in documents %}
+                <tr>
+                    <td>
+                        <div class="doc-title">{{ document.title }}</div>
+                        <div class="muted">Document ID: {{ document.id }}</div>
+                    </td>
+
+                    <td>
+                        {{ document.document_type_display|default:document.document_type }}
+                    </td>
+
+                    <td>
+                        {{ document.uploaded_at|date:"d M Y" }}
+                    </td>
+
+                    <td>v{{ document.version }}</td>
+
+                    <td>
+                        {% if document.status == "APPROVED" %}
+                            <span class="status approved">Approved</span>
+                        {% elif document.status == "PENDING" %}
+                            <span class="status pending">Pending</span>
+                        {% elif document.status == "REJECTED" %}
+                            <span class="status rejected">Rejected</span>
+                        {% else %}
+                            <span class="status correction">
+                                {{ document.status }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="actions">
+                            {% if document.file_url %}
+                                <a class="action-link"
+                                   href="{{ document.file_url }}"
+                                   target="_blank">View</a>
+                            {% endif %}
+
+                            <a class="action-link"
+                               href="{% url 'edit_document_page' document.id %}">
+                                Edit
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty">
+                        <strong>No documents uploaded yet.</strong><br>
+                        Your uploaded documents will appear here.
+                        <br><br>
+                        <a href="{% url 'upload_document' %}"
+                           class="button primary">
+                            Upload Your First Document
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- HOD ASSIGNED SUBMISSIONS -->
+    <section class="section">
+        <h2>HOD Assigned Submissions</h2>
+        <p class="section-description">
+            Review the documents requested by your HOD.
+        </p>
+
+        {% for item in hod_requests %}
+        <article class="request-card">
+            <span class="muted">{{ item.document_type }}</span>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.description }}</p>
+            <p><strong>Deadline:</strong> {{ item.deadline }}</p>
+
+            {% if item.has_submitted %}
+                <span class="status approved">Submitted</span>
+                <p>
+                    Submission status:
+                    <strong>{{ item.submission_status }}</strong>
+                </p>
+            {% else %}
+                <span class="status pending">Not Submitted</span>
+                <p>
+                    <a class="button primary"
+                       href="{% url 'upload_document' %}?request_id={{ item.id }}">
+                        Upload Document
+                    </a>
+                </p>
+            {% endif %}
+        </article>
+
+        {% empty %}
+        <div class="request-card">
+            <p>No HOD submission requests available.</p>
+        </div>
+        {% endfor %}
+    </section>
+
+</main>
+</body>
+</html>

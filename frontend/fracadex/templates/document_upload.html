@@ -1,0 +1,121 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ACADEX | Upload Document</title>
+
+    <link rel="stylesheet" href="{% static 'document_upload.css' %}">
+    <script src="{% static 'document_upload.js' %}" defer></script>
+</head>
+
+<body>
+
+    <main class="upload-card">
+
+        <div class="brand">ACADEX</div>
+
+        <h1>Upload Document</h1>
+
+        <p class="description">
+            Submit your academic documents for verification.
+            Make sure your uploaded file is clear and readable.
+        </p>
+
+        {% if selected_request %}
+        <div class="request-details">
+            <h3>HOD Submission Request</h3>
+
+            <p><strong>Request Title:</strong> {{ selected_request.title }}</p>
+            <p><strong>Description:</strong> {{ selected_request.description }}</p>
+            <p><strong>Document Type:</strong> {{ selected_request.document_type }}</p>
+            <p><strong>Deadline:</strong> {{ selected_request.deadline }}</p>
+            <p><strong>Request ID:</strong> #{{ selected_request.id }}</p>
+        </div>
+        {% endif %}
+
+        {% if message %}
+        <div class="message">
+            {{ message }}
+        </div>
+        {% endif %}
+
+        <form method="POST"
+              action="{% url 'upload_document' %}"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            {% if submission_request_id %}
+            <input
+                type="hidden"
+                name="submission_request_id"
+                value="{{ submission_request_id }}"
+            >
+            {% endif %}
+
+            <div class="form-group">
+                <label for="document_type">Document Type</label>
+
+                <select id="document_type" name="document_type" required>
+                    <option value="">Select document type</option>
+
+                    {% for value, label in document_types %}
+                    <option
+                        value="{{ value }}"
+                        {% if selected_request and selected_request.document_type == value %}selected{% endif %}
+                    >
+                        {{ label }}
+                    </option>
+                    {% endfor %}
+
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Document Title</label>
+
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Enter document title"
+                    value="{% if selected_request %}{{ selected_request.title }}{% endif %}"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="file">Choose File</label>
+
+                <input
+                    type="file"
+                    id="file"
+                    name="file"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required
+                >
+
+                <p class="file-note" id="file-note">
+                    Accepted formats: PDF, JPG, JPEG and PNG.
+                </p>
+            </div>
+
+            <button type="submit" class="upload-button">
+                Submit Document
+            </button>
+
+        </form>
+
+        <a href="{% url 'student_dashboard' %}" class="back-link">
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+</body>
+</html>

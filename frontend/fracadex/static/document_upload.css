@@ -1,0 +1,117 @@
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: #f4f6fa;
+}
+
+.upload-card {
+    width: 100%;
+    max-width: 520px;
+    padding: 35px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.brand {
+    color: #263b70;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 25px;
+}
+
+h1 {
+    color: #202b42;
+    font-size: 25px;
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #697386;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    color: #303b50;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 9px;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #d7dce5;
+    border-radius: 7px;
+    font-size: 14px;
+    background: #ffffff;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #3659a8;
+}
+
+input[type="file"] {
+    background: #f8f9fc;
+}
+
+.file-note {
+    color: #788195;
+    font-size: 12px;
+    margin-top: 7px;
+}
+
+.upload-button {
+    width: 100%;
+    padding: 14px;
+    background: #263b70;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.upload-button:hover {
+    background: #1c2e5a;
+}
+
+.back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    color: #3659a8;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.message {
+    color: #c62828;
+    background: #fff0f0;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 18px;
+    font-size: 14px;
+}
