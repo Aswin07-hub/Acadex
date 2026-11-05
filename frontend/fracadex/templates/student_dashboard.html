@@ -9,7 +9,7 @@
     <title>ACADEX | Student Dashboard</title>
 
     <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
-   
+
 </head>
 
 <body>
@@ -48,16 +48,16 @@
                 </a>
 
                 <a href="{% url 'student_profile' %}" class="nav-link" id="profileNav">
-                <span>○</span>My Profile</a>
+                    <span>○</span>My Profile</a>
 
             </nav>
 
             <div class="sidebar-bottom">
-
                 <a href="{% url 'help_support' %}" class="nav-link">
                     <span>?</span>
                     Help & Support
                 </a>
+
 
                 <form method="POST" action="{% url 'logout' %}">
                     {% csrf_token %}
@@ -456,7 +456,7 @@
                     <div>
                         <small>Student Name</small>
                         <strong>
-                            {{ profile.first_name }} {{ profile.last_name }}    
+                            {{ profile.first_name }} {{ profile.last_name }}
                         </strong>
                     </div>
 
@@ -581,7 +581,7 @@
 
 
     <script src="{% static 'scripts/student_dashboard.js' %}"></script>
-   
+
 
 </body>
 
