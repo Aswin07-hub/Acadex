@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEX | Help & Support</title>
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'help_support.css' %}">
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-logo">A</div>
+                <span>ACADEX</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    <span>⌂</span> Dashboard
+                </a>
+                <a href="#documents" class="nav-link">
+                    <span>▤</span> My Documents
+                </a>
+                <a href="#events" class="nav-link">
+                    <span>▦</span> Campus Events
+                </a>
+                <a href="{% url 'notifications' %}" class="nav-link">
+                    <span>♧</span> Notifications
+                </a>
+                <a href="{% url 'student_profile' %}" class="nav-link">
+                    <span>○</span> My Profile
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <a href="{% url 'help_support' %}" class="nav-link active">
+                    <span>?</span> Help & Support
+                </a>
+
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-button">
+                        <span>↪</span> Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <main class="main-content">
+
+            <header class="top-header">
+                <div class="header-left">
+                    <p class="institution-name">STUDENT PORTAL / ACADEX</p>
+                    <h2>Help & Support</h2>
+                </div>
+
+                <div class="header-right">
+                    <div class="profile-info">
+                        <div class="profile-avatar">
+                            {{ username|first|upper }}
+                        </div>
+                        <div>
+                            <strong>{{ username }}</strong>
+                            <small>Student</small>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section class="support-welcome">
+                <div>
+                    <p class="support-tag">ACADEX STUDENT ASSISTANCE</p>
+                    <h1>How can we help you?</h1>
+                    <p>
+                        Ask your questions and get assistance from
+                        the ACADEX AI Assistant.
+                    </p>
+                </div>
+                <div class="support-symbol">?</div>
+            </section>
+
+            <section class="support-layout">
+
+                <div class="support-chat">
+
+                    <div class="chat-header">
+                        <div class="ai-avatar">A</div>
+                        <div>
+                            <h3>ACADEX Assistant</h3>
+                            <span>Student Support Assistant</span>
+                        </div>
+                        <button id="newChatButton" type="button">
+                            New chat
+                        </button>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <div class="message-avatar">A</div>
+                            <div class="message-content">
+                                <span>ACADEX Assistant</span>
+                                <p>
+                                    Hello! Welcome to ACADEX Help & Support.
+                                    How can I help you today?
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="suggested-questions">
+                        <p>Suggested questions</p>
+                        <button type="button" class="suggestion">
+                            How do I upload my documents?
+                        </button>
+                        <button type="button" class="suggestion">
+                            How can I check document status?
+                        </button>
+                        <button type="button" class="suggestion">
+                            How do I update my profile?
+                        </button>
+                    </div>
+
+                    <form id="chatForm" class="chat-input-area">
+                        {% csrf_token %}
+                        <input type="text" id="messageInput" placeholder="Type your question here..." autocomplete="off"
+                            required>
+                        <button type="submit" id="sendButton">
+                            Send
+                        </button>
+                    </form>
+
+                    <p class="chat-disclaimer">
+                        AI responses may need verification.
+                        Unresolved questions are reported to the HOD.
+                    </p>
+
+                </div>
+
+                <aside class="support-information">
+
+                    <div class="information-card">
+                        <h3>What can I ask?</h3>
+                        <p>Get help with common ACADEX activities.</p>
+
+                        <div class="help-topic">
+                            <span>01</span>
+                            <div>
+                                <strong>Document Upload</strong>
+                                <small>Uploading and managing documents</small>
+                            </div>
+                        </div>
+
+                        <div class="help-topic">
+                            <span>02</span>
+                            <div>
+                                <strong>Document Verification</strong>
+                                <small>Understanding document status</small>
+                            </div>
+                        </div>
+
+                        <div class="help-topic">
+                            <span>03</span>
+                            <div>
+                                <strong>Student Profile</strong>
+                                <small>Profile and account assistance</small>
+                            </div>
+                        </div>
+
+                        <div class="help-topic">
+                            <span>04</span>
+                            <div>
+                                <strong>Portal Assistance</strong>
+                                <small>Using ACADEX features</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="information-card privacy-card">
+                        <h3>Need further attention?</h3>
+                        <p>
+                            If the AI cannot resolve your question,
+                            it will be marked for HOD awareness.
+                        </p>
+                        <span class="privacy-label">
+                            Student support activity is recorded
+                        </span>
+                    </div>
+
+                </aside>
+
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        const SEND_URL = "{% url 'send_support_message' %}";
+        const HISTORY_URL = "{% url 'support_history' %}";
+    </script>
+    <script src="{% static 'scripts/help_support.js' %}"></script>
+
+</body>
+
+</html>

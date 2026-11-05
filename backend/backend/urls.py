@@ -1,4 +1,4 @@
-
+﻿
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -64,6 +64,10 @@ urlpatterns = [
         edit_student_document,
         name="edit_student_document"
     ),
+
+    # Help & Support
+    path("api/support/chat/", views.support_chat, name="support_chat"),
+    path("api/support/history/", views.support_history, name="support_history"),
 ]
 
 # Serve uploaded files during development

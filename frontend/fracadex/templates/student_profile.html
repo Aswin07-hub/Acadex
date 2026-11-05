@@ -1,164 +1,429 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>My Student Profile | Acadex</title>
+    <title>ACADEX | Student Profile</title>
 
+    <link rel="stylesheet" href="{% static 'student_dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'student_profile.css' %}">
 </head>
 
 <body>
 
-<div class="profile-layout">
+    <div class="dashboard-container">
 
-    <!-- SIDEBAR -->
+        <!-- SIDEBAR -->
 
-    <aside class="sidebar">
+        <aside class="sidebar">
 
-        <div class="brand">
-            <div class="brand-logo">A</div>
-            <span>ACADEX</span>
-        </div>
-
-        <p class="nav-heading">MAIN MENU</p>
-
-        <a href="/student/dashboard/" class="nav-link">
-            <span>⌂</span> Dashboard
-        </a>
-
-        <a href="/profile/" class="nav-link active">
-            <span>♙</span> My Profile
-        </a>
-
-        <a href="/student/dashboard/#documents" class="nav-link">
-            <span>▤</span> My Documents
-        </a>
-
-        <a href="/student/dashboard/#notifications" class="nav-link">
-            <span>♢</span> Notifications
-        </a>
-
-        <div class="sidebar-bottom">
-            <a href="/" class="nav-link">
-                <span>↪</span> Logout
-            </a>
-        </div>
-
-    </aside>
-
-
-    <!-- MAIN CONTENT -->
-
-    <main class="main-content">
-
-        <header class="top-header">
-
-            <div>
-                <p class="institution-name">
-                    ACADEMIC EXCELLENCE PLATFORM
-                </p>
-
-                <h1>My Profile</h1>
-
-                <p class="subtitle">
-                    Manage your personal and academic information.
-                </p>
+            <div class="brand">
+                <div class="brand-logo">A</div>
+                <span>ACADEX</span>
             </div>
 
-            <div class="header-tag">
-                STUDENT PORTAL
-            </div>
+            <nav class="sidebar-nav">
 
-        </header>
+                <a href="{% url 'student_dashboard' %}" class="nav-link">
+                    <span>⌂</span>
+                    Dashboard
+                </a>
 
+                <a href="{% url 'student_dashboard' %}#documents" class="nav-link">
+                    <span>▤</span>
+                    My Documents
+                </a>
 
-        <!-- PROFILE HERO -->
+                <a href="{% url 'student_dashboard' %}#events" class="nav-link">
+                    <span>▦</span>
+                    Campus Events
+                </a>
 
-        <section class="profile-hero">
+                <a href="{% url 'notifications' %}" class="nav-link">
+                    <span>♧</span>
+                    Notifications
+                </a>
 
-            <div class="hero-left">
+                <a href="{% url 'student_profile' %}" class="nav-link active">
+                    <span>○</span>
+                    My Profile
+                </a>
 
-                <div class="profile-image">
+            </nav>
 
-                    {% if profile.profile_photo %}
-                        <img src="{{ profile.profile_photo }}" alt="Student photo">
-                    {% else %}
-                        <span>♙</span>
-                    {% endif %}
+            <div class="sidebar-bottom">
 
-                </div>
+                <a href="{% url 'student_dashboard' %}#help" class="nav-link">
+                    <span>?</span>
+                    Help & Support
+                </a>
 
-                <div class="hero-details">
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
 
-                    <span class="student-badge">STUDENT</span>
-
-                    <h2>
-                        {{ profile.first_name }}
-                        {{ profile.last_name }}
-                    </h2>
-
-                    <p>{{ profile.department }}</p>
-
-                    <small>
-                        Register Number: {{ profile.register_number }}
-                    </small>
-
-                </div>
+                    <button type="submit" class="logout-button">
+                        <span>↪</span>
+                        Logout
+                    </button>
+                </form>
 
             </div>
 
-            <button type="button" id="editButton" class="edit-button">
-                ✎ Edit Profile
-            </button>
-
-        </section>
+        </aside>
 
 
-        <!-- PROFILE FORM -->
+        <!-- MAIN CONTENT -->
 
-        <form id="profileForm" method="POST">
+        <main class="main-content">
 
-            {% csrf_token %}
+            <!-- HEADER -->
 
-            <!-- PERSONAL INFORMATION -->
+            <header class="top-header">
 
-            <section class="profile-card">
+                <div class="header-left">
 
-                <div class="section-heading">
-                    <div>
-                        <span class="section-number">01</span>
-                        <h2>Personal Information</h2>
-                        <p>Your basic personal details</p>
-                    </div>
+                    <p class="institution-name">
+                        STUDENT PORTAL / ACADEX
+                    </p>
+
+                    <h2>My Academic Profile</h2>
+
                 </div>
 
-                <div class="form-grid">
+                <div class="header-right">
 
-                    <div class="form-group">
-                        <label>First Name</label>
-                        <input type="text" name="first_name"
-                            value="{{ profile.first_name }}" readonly>
+                    <div class="search-box">
+                        <span>⌕</span>
+                        <input type="search" placeholder="Search documents...">
                     </div>
 
-                    <div class="form-group">
-                        <label>Last Name</label>
-                        <input type="text" name="last_name"
-                            value="{{ profile.last_name }}" readonly>
+                    <a href="{% url 'notifications' %}"
+                       class="notification-button"
+                       aria-label="Notifications">
+                        ♧
+                    </a>
+
+                    <div class="profile-info">
+
+                        <div class="profile-avatar">
+                            {{ profile.first_name|default:"S"|first|upper }}
+                        </div>
+
+                        <div>
+                            <strong>
+                                {{ profile.first_name }}
+                                {{ profile.last_name }}
+                            </strong>
+                            <small>Student</small>
+                        </div>
+
                     </div>
 
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="username"
-                            value="{{ profile.username }}" readonly>
+                </div>
+
+            </header>
+
+
+            <!-- STUDENT PROFILE CONTENT -->
+
+            <section class="content-section" id="profileContent">
+
+                <div id="profileView">
+
+                    <!-- PROFILE HEADING -->
+
+                    <div class="section-heading">
+
+                        <div>
+                            <p class="section-label">STUDENT PROFILE</p>
+
+                            <h2>My Academic Profile</h2>
+
+                            <p class="section-description">
+                                View and manage your personal and academic details.
+                            </p>
+                        </div>
+
                     </div>
 
-                    <div class="form-group">
-                        <label>Date of Birth</label>
-                        <input type="date" name="date_of_birth"
-                            value="{{ profile.date_of_birth }}" readonly>
+
+                    <!-- STUDENT BANNER -->
+
+                    <div class="ap-student-banner">
+
+                        <div class="ap-avatar">
+
+                            {% if profile.profile_photo %}
+                                <img src="{{ profile.profile_photo.url }}"
+                                     alt="Student Photo">
+                            {% else %}
+                                {{ profile.first_name|default:"S"|first|upper }}
+                            {% endif %}
+
+                        </div>
+
+                        <div class="ap-student-details">
+
+                            <div class="ap-name-row">
+
+                                <h2>
+                                    {{ profile.first_name }}
+                                    {{ profile.last_name }}
+                                </h2>
+
+                                <span class="ap-role">STUDENT</span>
+
+                            </div>
+
+                            <p>
+                                🎓 {{ profile.register_number|default:"Not provided" }}
+
+                                <span>|</span>
+
+                                {{ profile.course|default:"Not provided" }}
+
+                                <span>|</span>
+
+                                Year {{ profile.year|default:"-" }}
+                                · Section {{ profile.section|default:"-" }}
+                            </p>
+
+                        </div>
+
+                        <div class="ap-graduation-icon">🎓</div>
+
+                    </div>
+
+
+                    <!-- INFORMATION CARDS -->
+
+                    <div class="ap-info-grid">
+
+                        <!-- PERSONAL INFORMATION -->
+
+                        <div class="ap-info-card">
+
+                            <h2>👤 Personal Information</h2>
+
+                            <div class="ap-info-row">
+                                <span>Full Name</span>
+                                <strong>
+                                    {{ profile.first_name }}
+                                    {{ profile.last_name }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Email ID</span>
+                                <strong>
+                                    {{ profile.email|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Phone Number</span>
+                                <strong>
+                                    {{ profile.phone|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Date of Birth</span>
+                                <strong>
+                                    {{ profile.date_of_birth|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Address</span>
+                                <strong>
+                                    {{ profile.address|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+
+                        <!-- ACADEMIC INFORMATION -->
+
+                        <div class="ap-info-card">
+
+                            <h2>📚 Academic Information</h2>
+
+                            <div class="ap-info-row">
+                                <span>Register Number</span>
+                                <strong>
+                                    {{ profile.register_number|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Course</span>
+                                <strong>
+                                    {{ profile.course|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Department</span>
+                                <strong>
+                                    {{ profile.department|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Year</span>
+                                <strong>
+                                    {{ profile.year|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                            <div class="ap-info-row">
+                                <span>Section</span>
+                                <strong>
+                                    {{ profile.section|default:"Not provided" }}
+                                </strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="ap-actions">
+
+                        <button type="button"
+                                id="apEditButton"
+                                class="ap-edit-button">
+                            ✎ Edit Profile
+                        </button>
+
+                        <a href="{% url 'student_dashboard' %}"
+                           class="ap-back-button">
+                            ← Dashboard
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <!-- EDIT PROFILE -->
+
+                <div id="profileEdit" hidden>
+
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-label">STUDENT PROFILE</p>
+                            <h2>Edit Profile</h2>
+                            <p class="section-description">
+                                Update your personal information.
+                            </p>
+                        </div>
+                    </div>
+
+
+                    <div class="ap-edit-card">
+
+                        <form id="apProfileForm"
+                              method="POST"
+                              action="{% url 'student_profile' %}"
+                              enctype="multipart/form-data">
+
+                            {% csrf_token %}
+
+                            <div class="ap-form-grid">
+
+                                <div class="ap-form-field">
+                                    <label for="apFullName">Full Name</label>
+
+                                    <input type="text"
+                                           id="apFullName"
+                                           value="{{ profile.first_name }} {{ profile.last_name }}"
+                                           required>
+                                </div>
+
+                                <input type="hidden"
+                                       name="first_name"
+                                       id="apFirstName">
+
+                                <input type="hidden"
+                                       name="last_name"
+                                       id="apLastName">
+
+
+                                <div class="ap-form-field">
+                                    <label for="apEmail">Email ID</label>
+
+                                    <input type="email"
+                                           id="apEmail"
+                                           name="email"
+                                           value="{{ profile.email|default:'' }}">
+                                </div>
+
+
+                                <div class="ap-form-field">
+                                    <label for="apPhone">Phone Number</label>
+
+                                    <input type="tel"
+                                           id="apPhone"
+                                           name="phone"
+                                           value="{{ profile.phone|default:'' }}">
+                                </div>
+
+
+                                <div class="ap-form-field">
+                                    <label for="apDob">Date of Birth</label>
+
+                                    <input type="date"
+                                           id="apDob"
+                                           name="date_of_birth"
+                                           value="{{ profile.date_of_birth|date:'Y-m-d' }}">
+                                </div>
+
+
+                                <div class="ap-form-field ap-full-width">
+                                    <label for="apAddress">Address</label>
+
+                                    <textarea id="apAddress"
+                                              name="address"
+                                              rows="3">{{ profile.address|default:'' }}</textarea>
+                                </div>
+
+
+                                <div class="ap-form-field ap-full-width">
+                                    <label for="apPhoto">Profile Photo</label>
+
+                                    <input type="file"
+                                           id="apPhoto"
+                                           name="profile_photo"
+                                           accept="image/*">
+                                </div>
+
+                            </div>
+
+
+                            <div class="ap-form-actions">
+
+                                <button type="submit" class="ap-edit-button">
+                                    Save Changes
+                                </button>
+
+                                <button type="button"
+                                        id="apCancelEdit"
+                                        class="ap-back-button">
+                                    Cancel
+                                </button>
+
+                            </div>
+
+                        </form>
+
                     </div>
 
                 </div>
@@ -166,117 +431,28 @@
             </section>
 
 
-            <!-- ACADEMIC INFORMATION -->
+            <!-- FOOTER -->
 
-            <section class="profile-card">
+            <footer class="dashboard-footer">
 
-                <div class="section-heading">
-                    <div>
-                        <span class="section-number">02</span>
-                        <h2>Academic Information</h2>
-                        <p>Your college and course details</p>
-                    </div>
-                </div>
+                <span>
+                    ACADEX · Academic Excellence Platform
+                </span>
 
-                <div class="form-grid">
+                <span>
+                    © 2026 All rights reserved.
+                </span>
 
-                    <div class="form-group">
-                        <label>Register Number</label>
-                        <input type="text"
-                            value="{{ profile.register_number }}" readonly>
-                    </div>
+            </footer>
 
-                    <div class="form-group">
-                        <label>Department</label>
-                        <input type="text"
-                            value="{{ profile.department }}" readonly>
-                    </div>
+        </main>
 
-                    <div class="form-group">
-                        <label>Course</label>
-                        <input type="text"
-                            value="{{ profile.course }}" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Academic Year</label>
-                        <input type="text"
-                            value="{{ profile.year }}" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Section</label>
-                        <input type="text"
-                            value="{{ profile.section }}" readonly>
-                    </div>
-
-                </div>
-
-            </section>
+    </div>
 
 
-            <!-- CONTACT INFORMATION -->
+    <!-- JAVASCRIPT -->
 
-            <section class="profile-card">
-
-                <div class="section-heading">
-                    <div>
-                        <span class="section-number">03</span>
-                        <h2>Contact Information</h2>
-                        <p>Your communication details</p>
-                    </div>
-                </div>
-
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label>Email Address</label>
-                        <input type="email" name="email"
-                            value="{{ profile.email }}" readonly>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Mobile Number</label>
-                        <input type="tel" name="phone"
-                            value="{{ profile.phone }}" readonly>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>Residential Address</label>
-                        <textarea name="address" readonly>{{ profile.address }}</textarea>
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- FORM ACTIONS -->
-
-            <div class="form-actions" id="formActions">
-
-                <button type="button" id="cancelButton" class="cancel-button">
-                    Cancel
-                </button>
-
-                <button type="submit" class="save-button">
-                    Save Changes
-                </button>
-
-            </div>
-
-        </form>
-
-
-        <footer>
-            © 2026 Acadex · Academic Excellence Platform
-        </footer>
-
-    </main>
-
-</div>
-
-<script src="{% static 'scripts/student_profile.js' %}"></script>
+    <script src="{% static 'scripts/student_profile.js' %}"></script>
 
 </body>
 </html>

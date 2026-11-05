@@ -1,13 +1,7 @@
 
-<<<<<<< HEAD
-// ======================================
-// 1. Show and Hide Password
-// ======================================
-=======
 // ========================================
-// 1. GET HTML ELEMENTS
+// Login form behavior
 // ========================================
->>>>>>> bd4a0030db424e0b74989f15dec3197df1795904
 
 const loginForm = document.getElementById("loginForm");
 const roleInput = document.getElementById("role");
@@ -51,38 +45,6 @@ togglePassword.addEventListener("click", function () {
 });
 
 
-<<<<<<< HEAD
-// ======================================
-// 2. Login Form Validation
-// ======================================
-
-const loginForm = document.getElementById("loginForm");
-
-const message = document.getElementById("message");
-
-loginForm.addEventListener("submit", function (event) {
-
-    const role = document.getElementById("role").value;
-
-    const username = document.getElementById("username").value.trim();
-
-    const password = passwordInput.value;
-
-    if (
-        role === "" ||
-        username === "" ||
-        password === ""
-    ) {
-
-        event.preventDefault();
-
-        message.textContent = "Please fill in all fields.";
-
-        message.style.color = "red";
-
-    }
-
-=======
 // ========================================
 // 3. DISPLAY MESSAGE
 // ========================================
@@ -101,9 +63,6 @@ function showMessage(text, type) {
 // ========================================
 
 loginForm.addEventListener("submit", function (event) {
-
-    event.preventDefault();
-
     const role = roleInput.value;
     const username = usernameInput.value.trim();
     const password = passwordInput.value;
@@ -189,21 +148,16 @@ loginForm.addEventListener("submit", function (event) {
 
 const forgotLink = document.querySelector(".forgot-link");
 
-forgotLink.addEventListener("click", function (event) {
+if (forgotLink) {
+    forgotLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        showMessage(
+            "Please contact your administrator to reset your password.",
+            "error"
+        );
+    });
+}
 
-    event.preventDefault();
-
-    showMessage(
-        "Please contact your administrator to reset your password.",
-        "error"
-    );
-
-});
-
-
-// ========================================
-// 6. CLEAR MESSAGE WHEN USER TYPES
-// ========================================
 
 [roleInput, usernameInput, passwordInput].forEach(input => {
 
@@ -214,16 +168,4 @@ forgotLink.addEventListener("click", function (event) {
         message.className = "message";
 
     });
-
->>>>>>> bd4a0030db424e0b74989f15dec3197df1795904
 });
-
-
-// ======================================
-// 3. Login Submission
-// ======================================
-
-// The browser submits the form using POST.
-// Frontend Django views.py receives the request.
-// Python requests performs GET and POST
-// communication with the backend API.

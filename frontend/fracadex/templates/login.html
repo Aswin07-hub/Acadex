@@ -164,16 +164,11 @@
 
 
                     <!-- Backend Response Message -->
-                    {% if message %}
-
-                        <p
-                            id="message"
-                            class="message {% if success %}success{% else %}error{% endif %}"
-                        >
-                            {{ message }}
-                        </p>
-
-                    {% endif %}
+                    <p
+                        id="message"
+                        class="message{% if message %} {% if success %}success{% else %}error{% endif %}{% endif %}"
+                        aria-live="polite"
+                    >{{ message|default:"" }}</p>
 
                 </form>
 

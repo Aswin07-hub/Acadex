@@ -1,4 +1,4 @@
-
+﻿
 import requests
 
 from django.shortcuts import render, redirect
@@ -18,6 +18,9 @@ def get_backend_cookies(request):
 # LOGIN PAGE
 # ==========================================
 
+
+
+
 def login_page(request):
 
     message = ""
@@ -32,6 +35,7 @@ def login_page(request):
         session = requests.Session()
 
         try:
+            # Get backend CSRF token
             csrf_response = session.get(
                 BASE_URL + "api/csrf/",
                 timeout=10
@@ -43,6 +47,7 @@ def login_page(request):
                 message = "Unable to connect to backend CSRF service."
 
             else:
+                # Backend login
                 response = session.post(
                     BASE_URL + "api/login/",
                     json={
@@ -95,7 +100,6 @@ def login_page(request):
             "success": success
         }
     )
-
 
 # ==========================================
 # REGISTER PAGE
@@ -177,7 +181,6 @@ def register_page(request):
 # ==========================================
 # STUDENT DASHBOARD
 # ==========================================
-
 def student_dashboard(request):
 
     username = request.session.get("student_username")

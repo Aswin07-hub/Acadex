@@ -2,6 +2,7 @@
 import json
 
 from django.http import JsonResponse
+from .ai_service import get_ai_response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
@@ -12,7 +13,13 @@ from django.views.decorators.csrf import (
 )
 from django.db import transaction
 from django.utils.dateparse import parse_date
-from .models import StudentProfile, Notification
+from .models import (
+    StudentProfile,
+    HODProfile,
+    Notification,
+    SupportConversation,
+    SupportMessage
+)
 
 User = get_user_model()
 
@@ -485,4 +492,191 @@ def delete_notification(request, notification_id):
     return JsonResponse({
         "success": True,
         "message": "Notification deleted successfully"
+    })
+
+
+
+
+# ==========================================
+# AI HELP & SUPPORT API
+# ==========================================
+
+import json
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST, require_GET
+from django.http import JsonResponse
+from django.db import transaction
+
+
+@csrf_exempt
+@require_POST
+def support_chat(request):
+
+    try:
+        data = json.loads(request.body)
+
+        username = data.get("username", "").strip()
+        question = data.get("message", "").strip()
+        conversation_id = data.get("conversation_id")
+
+        if not username or not question:
+            return JsonResponse({
+                "success": False,
+                "message": "Username and question are required."
+            }, status=400)
+
+        # Find student
+        student = StudentProfile.objects.select_related(
+            "user"
+        ).get(
+            user__username=username,
+            user__role="STUDENT"
+        )
+
+        # Generate AI answer
+        answer = get_ai_response(question)
+
+        # Determine AI status
+        if answer:
+            ai_status = "ANSWERED"
+        else:
+            ai_status = "UNRESOLVED"
+            answer = (
+                "Sorry, I couldn't resolve your question right now. "
+                "Your question has been recorded for HOD information."
+            )
+
+        with transaction.atomic():
+
+            # Get existing conversation or create new one
+            if conversation_id:
+                conversation = SupportConversation.objects.get(
+                    id=conversation_id,
+                    student=student
+                )
+            else:
+                conversation = SupportConversation.objects.create(
+                    student=student
+                )
+
+            # Save student question
+            SupportMessage.objects.create(
+                conversation=conversation,
+                sender="STUDENT",
+                message=question
+            )
+
+            # Save AI response with correct status
+            SupportMessage.objects.create(
+                conversation=conversation,
+                sender="AI",
+                message=answer,
+                status=ai_status
+            )
+
+            # Find HODs in student's department
+            hod_profiles = HODProfile.objects.select_related(
+                "user"
+            ).filter(
+                department__iexact=student.department
+            )
+
+            # Inform HOD about the student's question
+            for hod in hod_profiles:
+
+                Notification.objects.create(
+                    recipient=hod.user,
+                    title="New Student Help Request",
+                    message=(
+                        f"Student: {student.user.get_full_name()}\n"
+                        f"Register Number: {student.register_number}\n"
+                        f"Department: {student.department}\n"
+                        f"Year: {student.year}\n"
+                        f"Question: {question}\n"
+                        f"AI Status: {ai_status}"
+                    ),
+                    category="SYSTEM",
+                    priority="NORMAL"
+                )
+
+        return JsonResponse({
+            "success": True,
+            "conversation_id": conversation.id,
+            "answer": answer,
+            "ai_status": ai_status
+        })
+
+    except StudentProfile.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Student profile not found."
+        }, status=404)
+
+    except SupportConversation.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Conversation not found."
+        }, status=404)
+
+    except (json.JSONDecodeError, AttributeError):
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid request data."
+        }, status=400)
+# ==========================================
+# GET: STUDENT SUPPORT CHAT HISTORY
+# ==========================================
+
+@csrf_exempt
+@require_GET
+def support_history(request):
+
+    username = request.GET.get("username", "").strip()
+
+    if not username:
+        return JsonResponse({
+            "success": False,
+            "message": "Username is required."
+        }, status=400)
+
+    student = StudentProfile.objects.filter(
+        user__username=username,
+        user__role="STUDENT"
+    ).first()
+
+    if not student:
+        return JsonResponse({
+            "success": False,
+            "message": "Student not found."
+        }, status=404)
+
+    conversations = SupportConversation.objects.filter(
+        student=student
+    ).order_by("-created_at")
+
+    result = []
+
+    for conversation in conversations:
+
+        messages = conversation.messages.order_by("created_at")
+
+        result.append({
+            "conversation_id": conversation.id,
+            "subject": conversation.subject,
+            "messages": [
+                {
+                    "sender": msg.sender,
+                    "message": msg.message,
+                    "status": msg.status,
+                    "created_at": msg.created_at.strftime(
+                        "%d %b %Y, %I:%M %p"
+                    )
+                }
+                for msg in messages
+            ]
+        })
+
+    return JsonResponse({
+        "success": True,
+        "conversations": result
     })

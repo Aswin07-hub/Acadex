@@ -1,4 +1,4 @@
-
+﻿
 from django.urls import path
 
 from fracadex.views.login import (
@@ -15,6 +15,11 @@ from fracadex.views.edit_document import edit_document_page
 from fracadex.views.hod_requests import hod_requests_page
 from fracadex.views.hod_documents import hod_documents_page
 
+from fracadex.views.help_support import (
+    help_support_page,
+    send_support_message,
+    support_history
+)
 
 urlpatterns = [
     path("", login_page, name="login_page"),
@@ -58,4 +63,8 @@ urlpatterns = [
     ),
 
     path("logout/", logout_page, name="logout"),
+
+    path("student/help-support/", help_support_page, name="help_support"),
+    path("student/help-support/send/", send_support_message, name="send_support_message"),
+    path("student/help-support/history/", support_history, name="support_history"),
 ]
