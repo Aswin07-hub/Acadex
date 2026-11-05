@@ -1,3 +1,4 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -15,69 +16,15 @@
 
     <div class="dashboard-container">
 
-        <!-- SIDEBAR: EXACT DASHBOARD SIDEBAR -->
-
-        <aside class="sidebar">
-
-            <div class="brand">
-                <div class="brand-logo">A</div>
-                <span>ACADEX</span>
-            </div>
-
-            <nav class="sidebar-nav">
-
-                <a href="{% url 'student_dashboard' %}" class="nav-link">
-                    <span>⌂</span>
-                    Dashboard
-                </a>
-
-                <a href="{% url 'student_dashboard' %}#documents" class="nav-link">
-                    <span>▤</span>
-                    My Documents
-                </a>
-
-                <a href="{% url 'student_dashboard' %}#events" class="nav-link">
-                    <span>▦</span>
-                    Campus Events
-                </a>
-
-                <a href="{% url 'notifications' %}" class="nav-link active">
-                    <span>♧</span>
-                    Notifications
-                </a>
-
-                <a href="{% url 'student_dashboard' %}#profile" class="nav-link">
-                    <span>○</span>
-                    My Profile
-                </a>
-
-            </nav>
-
-            <div class="sidebar-bottom">
-
-                <a href="{% url 'student_dashboard' %}#help" class="nav-link">
-                    <span>?</span>
-                    Help & Support
-                </a>
-
-                <form method="POST" action="{% url 'logout' %}">
-                    {% csrf_token %}
-                    <button type="submit" class="logout-button">
-                        <span>↪</span>
-                        Logout
-                    </button>
-                </form>
-
-            </div>
-
-        </aside>
+        <!-- SHARED SIDEBAR -->
+        {% include 'partials/student_sidebar.html' %}
 
 
         <!-- MAIN CONTENT -->
 
         <main class="main-content">
 
-            <!-- HEADER: SAME DASHBOARD HEADER -->
+            <!-- HEADER -->
 
             <header class="top-header">
 
@@ -95,10 +42,14 @@
 
                     <div class="search-box">
                         <span>⌕</span>
-                        <input type="search" id="notificationSearch" placeholder="Search notifications...">
+                        <input type="search"
+                               id="notificationSearch"
+                               placeholder="Search notifications...">
                     </div>
 
-                    <a href="{% url 'notifications' %}" class="notification-button" aria-label="Notifications">
+                    <a href="{% url 'notifications' %}"
+                       class="notification-button"
+                       aria-label="Notifications">
                         ♧
                     </a>
 
@@ -122,7 +73,7 @@
             </header>
 
 
-            <!-- NOTIFICATIONS CONTENT ONLY -->
+            <!-- NOTIFICATIONS CONTENT -->
 
             <section class="content-section">
 
@@ -136,7 +87,9 @@
                         </p>
                     </div>
 
-                    <button type="button" class="primary-button" id="markAllRead">
+                    <button type="button"
+                            class="primary-button"
+                            id="markAllRead">
                         Mark all as read
                     </button>
 
@@ -172,15 +125,21 @@
 
                 <div class="notification-filters">
 
-                    <button type="button" class="notification-filter active" data-filter="all">
+                    <button type="button"
+                            class="notification-filter active"
+                            data-filter="all">
                         All
                     </button>
 
-                    <button type="button" class="notification-filter" data-filter="unread">
+                    <button type="button"
+                            class="notification-filter"
+                            data-filter="unread">
                         Unread
                     </button>
 
-                    <button type="button" class="notification-filter" data-filter="read">
+                    <button type="button"
+                            class="notification-filter"
+                            data-filter="read">
                         Read
                     </button>
 
@@ -201,8 +160,9 @@
                     {% for notification in notifications %}
 
                     <article class="notification-item
-                    {% if not notification.is_read %}unread{% else %}read{% endif %}"
-                        data-title="{{ notification.title|lower }}" data-message="{{ notification.message|lower }}">
+                        {% if not notification.is_read %}unread{% else %}read{% endif %}"
+                        data-title="{{ notification.title|lower }}"
+                        data-message="{{ notification.message|lower }}">
 
                         <span class="notification-dot"></span>
 
@@ -236,12 +196,16 @@
                         <div class="notification-actions">
 
                             {% if not notification.is_read %}
-                            <button type="button" class="mark-read-btn" data-id="{{ notification.id }}">
+                            <button type="button"
+                                    class="mark-read-btn"
+                                    data-id="{{ notification.id }}">
                                 Mark as read
                             </button>
                             {% endif %}
 
-                            <button type="button" class="delete-notification-btn" data-id="{{ notification.id }}">
+                            <button type="button"
+                                    class="delete-notification-btn"
+                                    data-id="{{ notification.id }}">
                                 Delete
                             </button>
 
@@ -266,7 +230,7 @@
             </section>
 
 
-            <!-- FOOTER: SAME DASHBOARD FOOTER -->
+            <!-- FOOTER -->
 
             <footer class="dashboard-footer">
                 <span>ACADEX · Academic Excellence Platform</span>
@@ -276,6 +240,9 @@
         </main>
 
     </div>
+
+
+    <!-- JAVASCRIPT -->
 
     <script src="{% static 'notifications.js' %}"></script>
 
