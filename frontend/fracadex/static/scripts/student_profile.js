@@ -1,71 +1,123 @@
-const editButton = document.getElementById("editButton");
-const cancelButton = document.getElementById("cancelButton");
-const profileForm = document.getElementById("profileForm");
-const formActions = document.getElementById("formActions");
+document.addEventListener("DOMContentLoaded", function () {
 
-const editableFields = [
-    "first_name",
-    "last_name",
-    "date_of_birth",
-    "email",
-    "phone",
-    "address"
-];
+    const profileView = document.getElementById("profileView");
+    const profileEdit = document.getElementById("profileEdit");
 
-const originalValues = {};
+    const editButton = document.getElementById("apEditButton");
+    const cancelButton = document.getElementById("apCancelEdit");
 
-editableFields.forEach(function (name) {
-    const field = profileForm.elements[name];
+    const profileForm = document.getElementById("apProfileForm");
 
-    if (field) {
-        originalValues[name] = field.value;
+    const fullName = document.getElementById("apFullName");
+    const firstName = document.getElementById("apFirstName");
+    const lastName = document.getElementById("apLastName");
+
+    if (!profileView || !profileEdit) {
+        console.error("Student Profile elements not found.");
+        return;
     }
-});
 
-function setEditMode(enabled) {
+    let originalValues = {};
 
-    editableFields.forEach(function (name) {
+    // Save original form values
+    function saveOriginalValues() {
 
-        const field = profileForm.elements[name];
+        if (!profileForm) return;
 
-        if (field) {
-            field.readOnly = !enabled;
-        }
+        originalValues = {};
 
-    });
+        profileForm.querySelectorAll("input, textarea").forEach(function (field) {
 
-    formActions.style.display = enabled ? "flex" : "none";
+            if (field.type !== "file" && field.type !== "hidden") {
+                originalValues[field.name || field.id] = field.value;
+            }
 
-    editButton.style.display = enabled ? "none" : "block";
-}
+        });
 
+    }
 
-editButton.addEventListener("click", function () {
-    setEditMode(true);
-});
+    // Restore values when Cancel is clicked
+    function restoreOriginalValues() {
 
+        if (!profileForm) return;
 
-cancelButton.addEventListener("click", function () {
+        profileForm.querySelectorAll("input, textarea").forEach(function (field) {
 
-    editableFields.forEach(function (name) {
+            if (field.type === "file") {
+                field.value = "";
+                return;
+            }
 
-        const field = profileForm.elements[name];
+            if (field.type === "hidden") return;
 
-        if (field) {
-            field.value = originalValues[name];
-        }
+            const key = field.name || field.id;
 
-    });
+            if (Object.prototype.hasOwnProperty.call(originalValues, key)) {
+                field.value = originalValues[key];
+            }
 
-    setEditMode(false);
+        });
 
-});
+    }
 
+    // Open edit form
+    function openEditForm() {
 
-profileForm.addEventListener("submit", function (event) {
+        saveOriginalValues();
 
-    event.preventDefault();
+        profileView.hidden = true;
+        profileEdit.hidden = false;
 
-    alert("Profile page is ready. Database save integration is the next step.");
+    }
+
+    // Cancel editing
+    function cancelEditForm() {
+
+        restoreOriginalValues();
+
+        profileEdit.hidden = true;
+        profileView.hidden = false;
+
+    }
+
+    // Edit button
+    if (editButton) {
+
+        editButton.addEventListener("click", function () {
+            openEditForm();
+        });
+
+    }
+
+    // Cancel button
+    if (cancelButton) {
+
+        cancelButton.addEventListener("click", function () {
+            cancelEditForm();
+        });
+
+    }
+
+    // Prepare name fields before submitting
+    if (profileForm) {
+
+        profileForm.addEventListener("submit", function (event) {
+
+            const name = fullName.value.trim();
+
+            if (!name) {
+                event.preventDefault();
+                alert("Please enter your full name.");
+                return;
+            }
+
+            const nameParts = name.split(/\s+/);
+
+            firstName.value = nameParts[0];
+            lastName.value = nameParts.slice(1).join(" ");
+
+        });
+
+    }
 
 });
